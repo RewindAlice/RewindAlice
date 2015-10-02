@@ -1,0 +1,2353 @@
+﻿using UnityEngine;
+using System.Collections;
+
+public class Stage : MonoBehaviour
+{
+    const int STAGE_X = 11; // ステージの横幅
+    const int STAGE_Y = 5;  // ステージの高さ
+    const int STAGE_Z = 11; // ステージの奥行
+
+    // ステージの天球
+    public enum Field
+    {
+        STAGE_1,    // ステージ１
+        STAGE_2,    // ステージ２
+        STAGE_3,    // ステージ３
+        STAGE_4,    // ステージ４
+        STAGE_5,    // ステージ５
+    }
+
+    // ステージギミック番号
+    const int NONE = 0;     // 何も無い
+    const int BLOCK = 1;    // 足場ブロック
+    const int START = -1;   // スタート地点
+    const int GOAL = -2;    // ゴール地点
+    const int WATER = 2;    // 水
+
+    const int BLOCK_GRASS_GROUND = 11;      // 森ステージの足場ブロック（１段目）
+    const int BLOCK_GRASS_1 = 12;           // 森ステージの足場ブロック（２段目）
+    const int BLOCK_GRASS_2 = 13;           // 森ステージの足場ブロック（３段目）
+    const int BLOCK_BLACK = 21;             // 家ステージの足場ブロック（黒）
+    const int BLOCK_WHITE = 22;             // 家ステージの足場ブロック（白）
+    const int BLOCK_BOOK = 23;              // 家ステージの足場ブロック（本棚）
+    const int BLOCK_INSECT_GROUND = 41;     // 暗い森ステージの足場ブロック（１段目）
+    const int BLOCK_INSECT_1 = 42;          // 暗い森ステージの足場ブロック（２段目）
+    const int BLOCK_INSECT_2 = 43;          // 暗い森ステージの足場ブロック（３段目）
+
+    const int HOLE1 = 60;   // 穴１
+    const int HOLE2 = 61;   // 穴２
+    const int HOLE3 = 62;   // 穴３
+    const int HOLE4 = 63;   // 穴４
+    const int HOLE5 = 64;   // 穴５
+
+    const int TREE1 = 65;   // 木（高さ１）
+    const int TREE2 = 66;   // 木（高さ２）
+
+    const int IVY_BLOCK = 70;       // 蔦ブロック
+    const int IVY_FRONT = 71;       // 蔦（FRONT）
+    const int IVY_BACK = 72;        // 蔦（BACK）
+    const int IVY_LEFT = 73;        // 蔦（LEFT）
+    const int IVY_RIGHT = 74;       // 蔦（RIGHT）
+
+    const int LADDER_BLOCK = 75;    // 梯子ブロック
+    const int LADDER_FRONT = 76;    // 梯子（FRONT）
+    const int LADDER_BACK = 77;     // 梯子（BACK）
+    const int LADDER_LEFT = 78;     // 梯子（LEFT）
+    const int LADDER_RIGHT = 79;    // 梯子（RIGHT）
+
+    const int DOOR_RED_KEY = 80;        // 赤扉（鍵）
+    const int DOOR_RED_FRONT = 81;      // 赤扉（FRONT）
+    const int DOOR_RED_BACK = 82;       // 赤扉（BACK）
+    const int DOOR_RED_LEFT = 83;       // 赤扉（LEFT）
+    const int DOOR_RED_RIGHT = 84;      // 赤扉（RIGHT）
+    const int DOOR_BLUE_KEY = 85;       // 青扉（鍵）
+    const int DOOR_BLUE_FRONT = 86;     // 青扉（FRONT）
+    const int DOOR_BLUE_BACK = 87;      // 青扉（BACK）
+    const int DOOR_BLUE_LEFT = 88;      // 青扉（LEFT）
+    const int DOOR_BLUE_RIGHT = 89;     // 青扉（RIGHT）
+    const int DOOR_YELLOW_KEY = 90;     // 黄扉（鍵）
+    const int DOOR_YELLOW_FRONT = 91;   // 黄扉（FRONT）
+    const int DOOR_YELLOW_BACK = 92;    // 黄扉（BACK）
+    const int DOOR_YELLOW_LEFT = 93;    // 黄扉（LEFT）
+    const int DOOR_YELLOW_RIGHT = 94;   // 黄扉（RIGHT）
+    const int DOOR_GREEN_KEY = 95;      // 緑扉（鍵）
+    const int DOOR_GREEN_FRONT = 96;    // 緑扉（FRONT）
+    const int DOOR_GREEN_BACK = 97;     // 緑扉（BACK）
+    const int DOOR_GREEN_LEFT = 98;     // 緑扉（LEFT）
+    const int DOOR_GREEN_RIGHT = 99;    // 緑扉（RIGHT）
+
+    const int FLOWER1 = 100;    // 花１
+    const int FLOWER2 = 101;    // 花２
+    const int FLOWER3 = 102;    // 花３
+    const int BRAMBLE = 103;    // 茨
+
+    const int CHESHIRE_CAT = 105;       // チェシャ猫
+    const int MUSHROOM_SMALL = 106;     // キノコ（小さくなる）
+    const int MUSHROOM_BIG = 107;       // キノコ（大きくなる）
+    const int POTION_SMALL = 108;       // 薬（小さくなる）
+    const int POTION_BIG = 109;         // 薬（大きくなる）
+
+    const int SOLDIER_HEART = 110;      // トランプ兵（その場監視）
+    const int SOLDIER_SPADE1 = 111;     // トランプ兵（巡回１）
+    const int SOLDIER_SPADE2 = 112;     // トランプ兵（巡回２）
+    const int TWINS_LEFT = 113;         // 双子（LEFT）
+    const int TWINS_RIGHT = 114;        // 双子（RIGHT）
+    const int EGG = 115;                // ハンプティ―
+    const int STONE = 116;              // 石
+    const int BOX = 117;                // 木箱
+
+    public GameMain gameMain;
+
+    public GameObject fieldStage1;  // ステージ１の天球
+    public GameObject fieldStage2;  // ステージ２の天球
+    public GameObject fieldStage3;  // ステージ３の天球
+    public GameObject fieldStage4;  // ステージ４の天球
+    public GameObject fieldStage5;  // ステージ５の天球
+
+    public GameObject block;    // 足場ブロック
+    public GameObject start;    // スタート地点
+    public GameObject goal;     // ゴール地点
+    public GameObject water;    // 水
+
+    public GameObject blockGrassGround;     // 森ステージの足場ブロック（１段目）
+    public GameObject blockGrass1;          // 森ステージの足場ブロック（２段目）
+    public GameObject blockGrass2;          // 森ステージの足場ブロック（３段目）
+    public GameObject blockBlack;           // 家ステージの足場ブロック（黒）
+    public GameObject blockWhite;           // 家ステージの足場ブロック（白）
+    public GameObject blockBook;            // 家ステージの足場ブロック（本棚）
+    public GameObject blockInsectGround;    // 暗い森ステージの足場ブロック（１段目）
+    public GameObject blockInsect1;         // 暗い森ステージの足場ブロック（２段目）
+    public GameObject blockInsect2;         // 暗い森ステージの足場ブロック（３段目）
+
+    public GameObject hole;    // 穴
+
+    public GameObject tree;     // 木
+
+    public GameObject ivy;      // 蔦
+
+    public GameObject ladder;       // 梯子
+
+    public GameObject doorKey;      // 鍵
+    public GameObject doorRed;      // 赤扉
+    public GameObject doorBlue;     // 青扉
+    public GameObject doorYellow;   // 黄扉
+    public GameObject doorGreen;    // 緑扉
+
+    public GameObject flower1;  // 花１
+    public GameObject flower2;  // 花２
+    public GameObject flower3;  // 花３
+    public GameObject bramble;  // 茨
+
+    public GameObject cheshireCat;      // チェシャ猫
+    public GameObject mushroomSmall;    // キノコ（小さくなる）
+    public GameObject mushroomBig;      // キノコ（大きくなる）
+    public GameObject potionSmall;      // 薬（小さくなる）
+    public GameObject potionBig;        // 薬（大きくなる）
+
+    public GameObject soldierHeart;     // トランプ兵（ハート）
+    public GameObject soldierSpade;     // トランプ兵（スペード）
+    public GameObject twinsLeft;        // 双子（LEFT）
+    public GameObject twinsRight;       // 双子（RIGHT）
+    public GameObject egg;              // ハンプティ―
+
+    public bool invisibleFlag = false; // 不可視状態か
+    public bool getKeyFlag = false; // 鍵を所持しているか
+    private int truthDoorPos_x; // 本物の扉の位置x
+    private int truthDoorPos_y; // 本物の扉の位置y
+    private int truthDoorPos_z; // 本物の扉の位置z
+    private int keyPos_x; // 鍵の位置x
+    private int keyPos_y; // 鍵の位置y
+    private int keyPos_z; // 鍵の位置z
+    public bool holdKeyFlag = false; // 鍵を所持しているか
+
+    const int DIRECTION_1 = 1;  // 向き１
+    const int DIRECTION_2 = 2;  // 向き２
+    const int DIRECTION_3 = 3;  // 向き３
+    const int DIRECTION_4 = 4;  // 向き４
+
+    public bool nextFlag = false;   // ターンを進めるフラグ
+    public bool backFlag = false;   // ターンを戻すフラグ
+    //
+
+    Field field;                                                                // フィールド
+    public int[, ,] stage = new int[STAGE_Y, STAGE_X, STAGE_Z];                 // ステージの配置情報を保存
+    GameObject fieldObject;                                                     // ステージ天球のオブジェクト
+    GameObject[, ,] stageObject = new GameObject[STAGE_Y, STAGE_X, STAGE_Z];    // ステージのオブジェクト
+    public int turnCount;                                                       // ステージのターン数
+    public bool goalFlag = false;
+
+    // 初期化
+    void Start()
+    {
+
+    }
+
+    // 更新
+    void Update()
+    {
+
+    }
+
+    // ステージ生成/////////////
+    public void CreateStage()
+    {
+        Vector3 fieldPosition = new Vector3(5, -0.5f, 5);
+
+        switch(field)
+        {
+            case Field.STAGE_1: fieldObject = GameObject.Instantiate(fieldStage1, fieldPosition, Quaternion.identity) as GameObject; break;
+            case Field.STAGE_2: fieldObject = GameObject.Instantiate(fieldStage2, fieldPosition, Quaternion.identity) as GameObject; break;
+            case Field.STAGE_3: fieldObject = GameObject.Instantiate(fieldStage3, fieldPosition, Quaternion.identity) as GameObject; break;
+            case Field.STAGE_4: fieldObject = GameObject.Instantiate(fieldStage4, fieldPosition, Quaternion.identity) as GameObject; break;
+            case Field.STAGE_5: fieldObject = GameObject.Instantiate(fieldStage5, fieldPosition, Quaternion.identity) as GameObject; break;
+        }
+
+        for (int x = 0; x < STAGE_X; x++)
+        {
+            for (int y = 0; y < STAGE_Y; y++)
+            {
+                for (int z = 0; z < STAGE_Z; z++)
+                {
+                    // ギミックの生成
+                    CreateGimmick(x, y, z);
+                }
+            }
+        }
+    }
+
+    // ギミック生成//////////////////////////////////
+    public void CreateGimmick(int x, int y, int z)
+    {
+        switch (stage[y, x, z])
+        {
+            // 何も無い
+            case NONE:
+                stageObject[y, x, z] = null;
+                break;
+            // 足場ブロック
+            case BLOCK:
+                stageObject[y, x, z] = GameObject.Instantiate(block, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                break;
+            // 森ステージの足場ブロック（１段目）
+            case BLOCK_GRASS_GROUND:
+                stageObject[y, x, z] = GameObject.Instantiate(blockGrassGround, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].transform.localEulerAngles = new Vector3(-90.0f, 0, 0);
+                break;
+            // 森ステージの足場ブロック（２段目）
+            case BLOCK_GRASS_1:
+                stageObject[y, x, z] = GameObject.Instantiate(blockGrass1, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].transform.localEulerAngles = new Vector3(-90.0f, 0, 0);
+                break;
+            // 森ステージの足場ブロック（３段目）
+            case BLOCK_GRASS_2:
+                stageObject[y, x, z] = GameObject.Instantiate(blockGrass2, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].transform.localEulerAngles = new Vector3(-90.0f, 0, 0);
+                break;
+            // 家ステージの足場ブロック（黒）
+            case BLOCK_BLACK:
+                stageObject[y, x, z] = GameObject.Instantiate(blockBlack, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].transform.localEulerAngles = new Vector3(-90.0f, 0, 0);
+                break;
+            // 家ステージの足場ブロック（白）
+            case BLOCK_WHITE:
+                stageObject[y, x, z] = GameObject.Instantiate(blockWhite, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].transform.localEulerAngles = new Vector3(-90.0f, 0, 0);
+                break;
+            // 家ステージの足場ブロック（本棚）
+            case BLOCK_BOOK:
+                stageObject[y, x, z] = GameObject.Instantiate(blockBook, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].transform.localEulerAngles = new Vector3(-90.0f, 0, 0);
+                break;
+            // 暗い森ステージの足場ブロック（１段目）
+            case BLOCK_INSECT_GROUND:
+                stageObject[y, x, z] = GameObject.Instantiate(blockInsectGround, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].transform.localEulerAngles = new Vector3(-90.0f, 0, 0);
+                break;
+            // 暗い森ステージの足場ブロック（２段目）
+            case BLOCK_INSECT_1:
+                stageObject[y, x, z] = GameObject.Instantiate(blockInsect1, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].transform.localEulerAngles = new Vector3(-90.0f, 0, 0);
+                break;
+            // 暗い森ステージの足場ブロック（３段目）
+            case BLOCK_INSECT_2:
+                stageObject[y, x, z] = GameObject.Instantiate(blockInsect2, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].transform.localEulerAngles = new Vector3(-90.0f, 0, 0);
+                break;
+            // スタート地点
+            case START:
+                stageObject[y, x, z] = GameObject.Instantiate(start, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                break;
+            // ゴール地点
+            case GOAL:
+                stageObject[y, x, z] = GameObject.Instantiate(goal, new Vector3(x, y - 0.5f, z), Quaternion.identity) as GameObject;
+                break;
+            // 水
+            case WATER:
+                stageObject[y, x, z] = GameObject.Instantiate(water, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                break;
+            // 穴
+            case HOLE1:
+            case HOLE2:
+            case HOLE3:
+            case HOLE4:
+            case HOLE5:
+                stageObject[y, x, z] = GameObject.Instantiate(hole, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                break;
+            // 木
+            case TREE1:
+                stageObject[y, x, z] = GameObject.Instantiate(tree, new Vector3(x, y - 0.5f, z), Quaternion.identity) as GameObject;
+                break;
+            // 蔦ブロック
+            case IVY_BLOCK:
+                switch(field)
+                {
+                    case Field.STAGE_1:
+                    case Field.STAGE_3:
+                    case Field.STAGE_5:
+                        switch(y)
+                        {
+                            case 0:
+                                // 森ステージの足場ブロック（１段目）
+                                    stageObject[y, x, z] = GameObject.Instantiate(blockGrassGround, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                                    stageObject[y, x, z].transform.localEulerAngles = new Vector3(-90.0f, 0, 0);
+                                    break;
+                            case 1:
+                                // 森ステージの足場ブロック（２段目）
+                                    stageObject[y, x, z] = GameObject.Instantiate(blockGrass1, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                                    stageObject[y, x, z].transform.localEulerAngles = new Vector3(-90.0f, 0, 0);
+                                    break;
+                            case 2:
+                            case 3:
+                            case 4:
+                                // 森ステージの足場ブロック（３段目）
+                                    stageObject[y, x, z] = GameObject.Instantiate(blockGrass2, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                                    stageObject[y, x, z].transform.localEulerAngles = new Vector3(-90.0f, 0, 0);
+                                    break;
+                        }
+                    case Field.STAGE_4:
+                        switch(y)
+                        {
+                            case 0:
+                                // 暗い森ステージの足場ブロック（１段目）
+                                    stageObject[y, x, z] = GameObject.Instantiate(blockInsectGround, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                                    stageObject[y, x, z].transform.localEulerAngles = new Vector3(-90.0f, 0, 0);
+                                    break;
+                            case 1:
+                            case 3:
+                                // 暗い森ステージの足場ブロック（２段目）
+                                    stageObject[y, x, z] = GameObject.Instantiate(blockInsect1, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                                    stageObject[y, x, z].transform.localEulerAngles = new Vector3(-90.0f, 0, 0);
+                                    break;
+                            case 2:
+                            case 4:
+                                // 暗い森ステージの足場ブロック（３段目）
+                                    stageObject[y, x, z] = GameObject.Instantiate(blockInsect2, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                                    stageObject[y, x, z].transform.localEulerAngles = new Vector3(-90.0f, 0, 0);
+                                    break;
+                        }
+                }
+            // 梯子
+            case LADDER_BLOCK:
+                switch(field)
+                {
+                    case Field.STAGE_2:
+                        // 家ステージの足場ブロック（本棚）
+                        stageObject[y, x, z] = GameObject.Instantiate(blockBook, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                        stageObject[y, x, z].transform.localEulerAngles = new Vector3(-90.0f, 0, 0);
+                        break;
+                    case Field.STAGE_5:
+                        switch (y)
+                        {
+                            case 0:
+                                // 森ステージの足場ブロック（１段目）
+                                stageObject[y, x, z] = GameObject.Instantiate(blockGrassGround, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                                stageObject[y, x, z].transform.localEulerAngles = new Vector3(-90.0f, 0, 0);
+                                break;
+                            case 1:
+                                // 森ステージの足場ブロック（２段目）
+                                stageObject[y, x, z] = GameObject.Instantiate(blockGrass1, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                                stageObject[y, x, z].transform.localEulerAngles = new Vector3(-90.0f, 0, 0);
+                                break;
+                            case 2:
+                            case 3:
+                            case 4:
+                                // 森ステージの足場ブロック（３段目）
+                                stageObject[y, x, z] = GameObject.Instantiate(blockGrass2, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                                stageObject[y, x, z].transform.localEulerAngles = new Vector3(-90.0f, 0, 0);
+                                break;
+                        }
+                        break;
+                }
+                break;
+            // 蔦（FRONT）
+            case IVY_FRONT:
+                Vector3 ivyFrontPosition = new Vector3(x, y - 0.4f, z + 0.5f);
+                stageObject[y, x, z] = GameObject.Instantiate(ivy, ivyFrontPosition, Quaternion.identity) as GameObject;
+                stageObject[y, x, z].transform.localEulerAngles = new Vector3(0, 180, 0);
+                break;
+            // 蔦（BACK）
+            case IVY_BACK:
+                Vector3 ivyBackPosition = new Vector3(x, y - 0.4f, z - 0.5f);
+                stageObject[y, x, z] = GameObject.Instantiate(ivy, ivyBackPosition, Quaternion.identity) as GameObject;
+                stageObject[y, x, z].transform.localEulerAngles = new Vector3(0, 0, 0);
+                break;
+            // 蔦（LEFT）
+            case IVY_LEFT:
+                Vector3 ivyLeftPosition = new Vector3(x - 0.5f, y - 0.4f, z);
+                stageObject[y, x, z] = GameObject.Instantiate(ivy, ivyLeftPosition, Quaternion.identity) as GameObject;
+                stageObject[y, x, z].transform.localEulerAngles = new Vector3(0, 90, 0);
+                break;
+            // 蔦（RIGHT）
+            case IVY_RIGHT:
+                Vector3 ivyRightPosition = new Vector3(x + 0.5f, y - 0.4f, z);
+                stageObject[y, x, z] = GameObject.Instantiate(ivy, ivyRightPosition, Quaternion.identity) as GameObject;
+                stageObject[y, x, z].transform.localEulerAngles = new Vector3(0, 270, 0);
+                break;
+            // 梯子（FRONT）
+            case LADDER_FRONT:
+                stageObject[y, x, z] = GameObject.Instantiate(ladder, new Vector3(x, y - 0.5f, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].transform.localEulerAngles = new Vector3(0, 180, 0);
+                break;
+            // 梯子（BACK）
+            case LADDER_BACK:
+                stageObject[y, x, z] = GameObject.Instantiate(ladder, new Vector3(x, y - 0.5f, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].transform.localEulerAngles = new Vector3(0, 0, 0);
+                break;
+            // 梯子（LEFT）
+            case LADDER_LEFT:
+                stageObject[y, x, z] = GameObject.Instantiate(ladder, new Vector3(x, y - 0.5f, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].transform.localEulerAngles = new Vector3(0, 90, 0);
+                break;
+            // 梯子（RIGHT）
+            case LADDER_RIGHT:
+                stageObject[y, x, z] = GameObject.Instantiate(ladder, new Vector3(x, y - 0.5f, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].transform.localEulerAngles = new Vector3(0, 270, 0);
+                break;
+            // 鍵
+            case DOOR_RED_KEY:
+            case DOOR_BLUE_KEY:
+            case DOOR_YELLOW_KEY:
+            case DOOR_GREEN_KEY:
+                stageObject[y, x, z] = GameObject.Instantiate(doorKey, new Vector3(x-0.3f, y-0.3f, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].transform.localEulerAngles = new Vector3(-45, 90, 0);
+                stageObject[y, x, z].GetComponent<Key>().Initialize();
+                break;
+            // 赤扉（FRONT）
+            case DOOR_RED_FRONT:
+                stageObject[y, x, z] = GameObject.Instantiate(doorRed, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].GetComponent<Door>().Initialize(DIRECTION_1);
+                break;
+            // 赤扉（BACK）
+            case DOOR_RED_BACK:
+                stageObject[y, x, z] = GameObject.Instantiate(doorRed, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].GetComponent<Door>().Initialize(DIRECTION_2);
+                break;
+            // 赤扉（LEFT）
+            case DOOR_RED_LEFT:
+                stageObject[y, x, z] = GameObject.Instantiate(doorRed, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].GetComponent<Door>().Initialize(DIRECTION_3);
+                break;
+            // 赤扉（RIGHT）
+            case DOOR_RED_RIGHT:
+                stageObject[y, x, z] = GameObject.Instantiate(doorRed, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].GetComponent<Door>().Initialize(DIRECTION_4);
+                break;
+            // 青扉（FRONT）
+            case DOOR_BLUE_FRONT:
+                stageObject[y, x, z] = GameObject.Instantiate(doorBlue, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].GetComponent<Door>().Initialize(DIRECTION_1);
+                break;
+            // 青扉（BACK）
+            case DOOR_BLUE_BACK:
+                stageObject[y, x, z] = GameObject.Instantiate(doorBlue, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].GetComponent<Door>().Initialize(DIRECTION_2);
+                break;
+            // 青扉（LEFT）
+            case DOOR_BLUE_LEFT:
+                stageObject[y, x, z] = GameObject.Instantiate(doorBlue, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].GetComponent<Door>().Initialize(DIRECTION_3);
+                break;
+            // 青扉（RIGHT）
+            case DOOR_BLUE_RIGHT:
+                stageObject[y, x, z] = GameObject.Instantiate(doorBlue, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].GetComponent<Door>().Initialize(DIRECTION_4);
+                break;
+            // 黄扉（FRONT）
+            case DOOR_YELLOW_FRONT:
+                stageObject[y, x, z] = GameObject.Instantiate(doorYellow, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].GetComponent<Door>().Initialize(DIRECTION_1);
+                break;
+            // 黄扉（BACK）
+            case DOOR_YELLOW_BACK:
+                stageObject[y, x, z] = GameObject.Instantiate(doorYellow, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].GetComponent<Door>().Initialize(DIRECTION_2);
+                break;
+            // 黄扉（LEFT）
+            case DOOR_YELLOW_LEFT:
+                stageObject[y, x, z] = GameObject.Instantiate(doorYellow, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].GetComponent<Door>().Initialize(DIRECTION_3);
+                break;
+            // 黄扉（RIGHT）
+            case DOOR_YELLOW_RIGHT:
+                stageObject[y, x, z] = GameObject.Instantiate(doorYellow, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].GetComponent<Door>().Initialize(DIRECTION_4);
+                break;
+            // 緑扉（FRONT）
+            case DOOR_GREEN_FRONT:
+                stageObject[y, x, z] = GameObject.Instantiate(doorYellow, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].GetComponent<Door>().Initialize(DIRECTION_1);
+                break;
+            // 緑扉（BACK）
+            case DOOR_GREEN_BACK:
+                stageObject[y, x, z] = GameObject.Instantiate(doorGreen, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].GetComponent<Door>().Initialize(DIRECTION_2);
+                break;
+            // 緑扉（LEFT）
+            case DOOR_GREEN_LEFT:
+                stageObject[y, x, z] = GameObject.Instantiate(doorGreen, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].GetComponent<Door>().Initialize(DIRECTION_3);
+                break;
+            // 緑扉（RIGHT）
+            case DOOR_GREEN_RIGHT:
+                stageObject[y, x, z] = GameObject.Instantiate(doorGreen, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].GetComponent<Door>().Initialize(DIRECTION_4);
+                break;
+            // 花１
+            case FLOWER1:
+                stageObject[y, x, z] = GameObject.Instantiate(flower1, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                break;
+            // 花２
+            case FLOWER2:
+                stageObject[y, x, z] = GameObject.Instantiate(flower2, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                break;
+            // 花３
+            case FLOWER3:
+                stageObject[y, x, z] = GameObject.Instantiate(flower3, new Vector3(x, y, z), Quaternion.identity) as GameObject;
+                break;
+            // 茨
+            case BRAMBLE:
+                stageObject[y, x, z] = GameObject.Instantiate(bramble, new Vector3(x, y - 0.5f, z), Quaternion.identity) as GameObject;
+                break;
+            // チェシャ猫
+            case CHESHIRE_CAT:
+                stageObject[y, x, z] = GameObject.Instantiate(cheshireCat, new Vector3(x, y-0.5f, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].GetComponent<Cheshire>().Initialize();
+                break;
+            // キノコ（小さくなる）
+            case MUSHROOM_SMALL:
+                stageObject[y, x, z] = GameObject.Instantiate(mushroomSmall, new Vector3(x, y - 0.4f, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].transform.localEulerAngles = new Vector3(270.0f, 0, 0);
+                break;
+            // キノコ（大きくなる）
+            case MUSHROOM_BIG:
+                stageObject[y, x, z] = GameObject.Instantiate(mushroomBig, new Vector3(x, y - 0.4f, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].transform.localEulerAngles = new Vector3(270.0f, 0, 0);
+                break;
+            // 薬（小さくなる）
+            case POTION_SMALL:
+                stageObject[y, x, z] = GameObject.Instantiate(potionSmall, new Vector3(x, y - 0.5f, z), Quaternion.identity) as GameObject;
+                break;
+            // 薬（大きくなる）
+            case POTION_BIG:
+                stageObject[y, x, z] = GameObject.Instantiate(potionBig, new Vector3(x, y - 0.5f, z), Quaternion.identity) as GameObject;
+                break;
+            // トランプ兵（その場監視）
+            case SOLDIER_HEART:
+                stageObject[y, x, z] = GameObject.Instantiate(soldierHeart, new Vector3(x, y - 0.5f, z), Quaternion.identity) as GameObject;
+                break;
+            // トランプ兵（巡回１）
+            case SOLDIER_SPADE1:
+                stageObject[y, x, z] = GameObject.Instantiate(soldierSpade, new Vector3(x, y - 0.5f, z), Quaternion.identity) as GameObject;
+                break;
+            // トランプ兵（巡回２）
+            case SOLDIER_SPADE2:
+                stageObject[y, x, z] = GameObject.Instantiate(soldierSpade, new Vector3(x, y - 0.5f, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].GetComponent<SpadeSoldier>().SetPat();
+                break;
+            // 双子（左）
+            case TWINS_LEFT:
+                stageObject[y, x, z] = GameObject.Instantiate(twinsLeft, new Vector3(x, y - 0.5f, z), Quaternion.identity) as GameObject;
+                break;
+            // 双子（右）
+            case TWINS_RIGHT:
+                stageObject[y, x, z] = GameObject.Instantiate(twinsRight, new Vector3(x, y - 0.5f, z), Quaternion.identity) as GameObject;
+                break;
+            // ハンプティ―
+            case EGG:
+                stageObject[y, x, z] = GameObject.Instantiate(egg, new Vector3(x, y - 0.5f, z), Quaternion.identity) as GameObject;
+                break;
+            // それ以外
+            default:
+                stageObject[y, x, z] = null;
+                break;
+        }
+    }
+
+    // スタート位置の取得///////////////
+    public Vector3 getStartPosition()
+    {
+        Vector3 startPosition = new Vector3(0, 0, 0);
+
+        for (int x = 0; x < STAGE_X; x++)
+        {
+            for (int y = 0; y < STAGE_Y; y++)
+            {
+                for (int z = 0; z < STAGE_Z; z++)
+                {
+                    if (stage[y, x, z] == START)
+                    {
+                        startPosition = new Vector3(x, y - 0.5f, z);
+                    }
+                }
+            }
+        }
+        return startPosition;
+    }
+
+    // 配列上のスタート座標Ｘの取得///////
+    public int getStartArrayPositionX()
+    {
+        int arrayPosX = 0;
+
+        for (int x = 0; x < STAGE_X; x++)
+        {
+            for (int y = 0; y < STAGE_Y; y++)
+            {
+                for (int z = 0; z < STAGE_Z; z++)
+                {
+                    if (stage[y, x, z] == START)
+                    {
+                        arrayPosX = x;
+                    }
+                }
+            }
+        }
+        return arrayPosX;
+    }
+
+    // 配列上のスタート座標Ｙの取得///////
+    public int getStartArrayPositionY()
+    {
+        int arrayPosY = 0;
+
+        for (int x = 0; x < STAGE_X; x++)
+        {
+            for (int y = 0; y < STAGE_Y; y++)
+            {
+                for (int z = 0; z < STAGE_Z; z++)
+                {
+                    if (stage[y, x, z] == START)
+                    {
+                        arrayPosY = y;
+                    }
+                }
+            }
+        }
+        return arrayPosY;
+    }
+
+    // 配列上のスタート座標Ｚの取得///////
+    public int getStartArrayPositionZ()
+    {
+        int arrayPosZ = 0;
+
+        for (int x = 0; x < STAGE_X; x++)
+        {
+            for (int y = 0; y < STAGE_Y; y++)
+            {
+                for (int z = 0; z < STAGE_Z; z++)
+                {
+                    if (stage[y, x, z] == START)
+                    {
+                        arrayPosZ = z;
+                    }
+                }
+            }
+        }
+        return arrayPosZ;
+    }
+
+    // 選択されたステージを設定
+    public void SelectStage(int stageNum)
+    {
+        switch (stageNum)
+        {
+            case 1: Stage1(); break;    // ステージ１を設定
+            case 2: Stage2(); break;    // ステージ１を設定
+            case 3: Stage3(); break;    // ステージ１を設定
+            case 4: Stage4(); break;    // ステージ１を設定
+            case 5: Stage5(); break;    // ステージ１を設定
+            //case 6: Stage6(); break;    // ステージ１を設定
+            //case 7: Stage7(); break;    // ステージ１を設定
+            //case 8: Stage8(); break;    // ステージ１を設定
+            //case 9: Stage9(); break;    // ステージ１を設定
+            //case 10: Stage10(); break;    // ステージ１を設定
+            //case 11: Stage11(); break;    // ステージ１を設定
+            //case 12: Stage12(); break;    // ステージ１を設定
+            //case 13: Stage13(); break;    // ステージ１を設定
+            //case 14: Stage14(); break;    // ステージ１を設定
+            //case 15: Stage15(); break;    // ステージ１を設定
+            //case 16: Stage16(); break;    // ステージ１を設定
+            //case 17: Stage17(); break;    // ステージ１を設定
+            //case 18: Stage18(); break;    // ステージ１を設定
+            //case 19: Stage19(); break;    // ステージ１を設定
+            //case 20: Stage20(); break;    // ステージ１を設定
+            //case 21: Stage21(); break;    // ステージ１を設定
+            //case 22: Stage22(); break;    // ステージ１を設定
+            //case 23: Stage23(); break;    // ステージ１を設定
+            //case 24: Stage24(); break;    // ステージ１を設定
+            case 25: Stage25(); break;    // ステージ１を設定
+        }
+    }
+
+
+    // ステージ１を設定////
+    public void Stage1()
+    {
+        int stage1TurnCount = 10;
+
+        Field stage1Field = Field.STAGE_1;
+
+        int[, ,] stage1 = new int[,,]
+        {
+            {
+                // １段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0, 11, 11, 11, 60, 11, 60, 11, 11, 11,  0},
+                {  0, 11, 11, 11, 11,100, 11, 11, 11, 11,  0},
+                {  0, 11, 11, 11, 11,101, 11, 11, 11, 11,  0},
+                {  0, 11, 11, 11, 11,102, 11, 11, 11, 11,  0},
+                {  0, 11, 11, 11, 11, 11, 11, 11, 11, 11,  0},
+                {  0, 11, 11, 11, 11, 11, 11, 11, 11, 11,  0},
+                {  0, 11, 11, 11, 11, 11, 11, 11, 11, 11,  0},
+                {  0, 11, 11, 11,  2,  2,  2, 11, 11, 11,  0},
+                {  0, 11, 11, 11, 11, 11, 11, 11, 11, 11,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ２段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0, -2,  0, 65,  0, 65,  0, 65,  0,  0,  0},
+                {  0,  0, 79,  0,  0,  0,  0,  0, 74,  0,  0},
+                {  0, 76, 75, 77,  0,  0,  0, 71, 70, 72,  0},
+                {  0,  0, 78,  0,108, 80,107,  0, 73, 81,  0},
+                {  0,105,  0,  0, 95, -1, 85,  0,  0, 86,  0},
+                {  0,110,  0,  0,109, 90,106,  0,  0, 91,  0},
+                {  0,  0,  0,  0,  0,103,  0,112,  0, 96,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,111,116,117,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ３段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ４段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ５段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+        };
+
+        //ドラゴン参照
+        //TODO:本物の扉の位置や鍵の位置を記憶させておくことで読み込みの短縮化を図る
+        // 本物の扉の位置
+        truthDoorPos_y = 1;
+        truthDoorPos_x = 5;
+        truthDoorPos_z = 4;
+        // 鍵の位置
+        keyPos_y = 1;
+        keyPos_x = 8;
+        keyPos_z = 6;
+
+        //
+
+
+        field = stage1Field;
+
+        turnCount = stage1TurnCount;
+
+        for (int x = 0; x < STAGE_X; x++)
+        {
+            for (int y = 0; y < STAGE_Y; y++)
+            {
+                for (int z = 0; z < STAGE_Z; z++)
+                {
+                    stage[y, x, z] = stage1[y, x, z];
+                }
+            }
+        }
+    }
+
+    //// 選択されたステージを設定/////////////////////
+    //public void Stage1()
+    //{
+    //    int stage1TurnCount = 4;
+
+    //    Field stage1Field = Field.STAGE_1;
+
+    //    int[, ,] stage1 = new int[,,]
+    //    {
+    //        {
+    //            // １段目
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0, 11, 11, 11, 11, 11,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //        },
+    //        {
+    //            // ２段目
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0, -1,  0,  0,  0, -2,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //        },
+    //        {
+    //            // ３段目
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //        },
+    //        {
+    //            // ４段目
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //        },
+    //        {
+    //            // ５段目
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //            {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+    //        },
+    //    };
+
+    //    field = stage1Field;
+
+    //    turnCount = stage1TurnCount;
+
+    //    for (int x = 0; x < STAGE_X; x++)
+    //    {
+    //        for (int y = 0; y < STAGE_Y; y++)
+    //        {
+    //            for (int z = 0; z < STAGE_Z; z++)
+    //            {
+    //                stage[y, x, z] = stage1[y, x, z];
+    //            }
+    //        }
+    //    }
+    //}
+    public void Stage2()
+    {
+        int stage1TurnCount = 6;
+
+        Field stage1Field = Field.STAGE_1;
+
+        int[, ,] stage1 = new int[,,]
+        {
+            {
+                // １段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0, 11, 11, 11,  0,  0,  0,  0},
+                {  0,  0,  0,  0, 11, 11, 11,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ２段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0, -1,  0, 74,  0,  0,  0,  0},
+                {  0,  0,  0,  0, 65, 12, 70,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ３段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0, -2,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ４段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ５段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+        };
+
+        field = stage1Field;
+
+        turnCount = stage1TurnCount;
+
+        for (int x = 0; x < STAGE_X; x++)
+        {
+            for (int y = 0; y < STAGE_Y; y++)
+            {
+                for (int z = 0; z < STAGE_Z; z++)
+                {
+                    stage[y, x, z] = stage1[y, x, z];
+                }
+            }
+        }
+    }
+    public void Stage3()
+    {
+        int stage1TurnCount = 7;
+
+        Field stage1Field = Field.STAGE_1;
+
+        int[, ,] stage1 = new int[,,]
+        {
+            {
+                // １段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0, 11, 11, 11,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0, 11,  0,  0,  0,  0},
+                {  0,  0,  0,  0, 11, 11, 11,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ２段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0, 12, 70, 72,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ３段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0, -2,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ４段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ５段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+        };
+
+        field = stage1Field;
+
+        turnCount = stage1TurnCount;
+
+        for (int x = 0; x < STAGE_X; x++)
+        {
+            for (int y = 0; y < STAGE_Y; y++)
+            {
+                for (int z = 0; z < STAGE_Z; z++)
+                {
+                    stage[y, x, z] = stage1[y, x, z];
+                }
+            }
+        }
+    }
+    public void Stage4()
+    {
+        int stage1TurnCount = 11;
+
+        Field stage1Field = Field.STAGE_1;
+
+        int[, ,] stage1 = new int[,,]
+        {
+            {
+                // １段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0, 11, 11, 11,  0,  0,  0,  0},
+                {  0,  0,  0,  0, 11, 11, 11,  0,  0,  0,  0},
+                {  0,  0,  0,  0, 11, 11, 11,  0,  0,  0,  0},
+                {  0,  0,  0,  0, 11, 11, 11,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ２段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0, 12,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0, 65, 12, 65,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0, 65,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ３段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0, -2,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ４段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ５段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+        };
+
+        field = stage1Field;
+
+        turnCount = stage1TurnCount;
+
+        for (int x = 0; x < STAGE_X; x++)
+        {
+            for (int y = 0; y < STAGE_Y; y++)
+            {
+                for (int z = 0; z < STAGE_Z; z++)
+                {
+                    stage[y, x, z] = stage1[y, x, z];
+                }
+            }
+        }
+    }
+    public void Stage5()
+    {
+        int stage1TurnCount = 10;
+
+        Field stage1Field = Field.STAGE_1;
+
+        int[, ,] stage1 = new int[,,]
+        {
+            {
+                // １段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0, 11, 11, 11,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0, 11,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0, 11, 11, 11,  0,  0,  0,  0},
+                {  0,  0,  0,  0, 11, 11, 11,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0, 11,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ２段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0, 11, 65, 11,  0,  0,  0,  0},
+                {  0,  0,  0,  0, 11, 11, 11,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0, 11,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ３段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0, 11,  0,  0,  0,  0},
+                {  0,  0,  0,  0, 71, 70, 11,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0, 11,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ４段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0, -2,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ５段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+        };
+
+        field = stage1Field;
+
+        turnCount = stage1TurnCount;
+
+        for (int x = 0; x < STAGE_X; x++)
+        {
+            for (int y = 0; y < STAGE_Y; y++)
+            {
+                for (int z = 0; z < STAGE_Z; z++)
+                {
+                    stage[y, x, z] = stage1[y, x, z];
+                }
+            }
+        }
+    }
+    public void Stage25()
+    {
+        int stage25TurnCount = 30;
+
+        Field stage1Field = Field.STAGE_5;
+
+        int[, ,] stage1 = new int[,,]
+        {
+            {
+                // １段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0, 11, 11, 11, 11, 11, 11, 11, 11, 11,  0},
+                {  0, 11,  2, 11, 11, 11, 11, 11, 11, 11,  0},
+                {  0, 11, 11, 11, 11, 11, 11, 60, 11, 11,  0},
+                {  0, 11, 11, 11, 11, 11, 11, 11, 11, 11,  0},
+                {  0, 11, 11, 11, 11, 11, 11, 11, 11, 11,  0},
+                {  0, 11, 11, 11, 11, 11, 11, 11, 11, 11,  0},
+                {  0, 11, 11, 11, 11, 11, 11, 11, 11, 11,  0},
+                {  0, 11, 11, 11, 11, 11, 11, 11, 11, 11,  0},
+                {  0, 11, 11, 11, 11, 11, 11, 11, 11, 11,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ２段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,109,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0, -1,  0,  0,108, 12, 12,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0, 74,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0, 71, 70, 72,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0, 73,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ３段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0, 12,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ４段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0, 60,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ５段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+        };
+
+        field = stage1Field;
+
+        turnCount = stage25TurnCount;
+
+        for (int x = 0; x < STAGE_X; x++)
+        {
+            for (int y = 0; y < STAGE_Y; y++)
+            {
+                for (int z = 0; z < STAGE_Z; z++)
+                {
+                    stage[y, x, z] = stage1[y, x, z];
+                }
+            }
+        }
+    }
+
+
+    public void SettingStageGimmick(int stageNum)
+    {
+        switch (stageNum)
+        {
+            case 1: Stage1Gimmick(); break;    // ステージ１のギミックを設定
+            case 2: Stage2Gimmick(); break;    // ステージ１のギミックを設定
+            case 3: Stage3Gimmick(); break;    // ステージ１のギミックを設定
+            case 4: Stage4Gimmick(); break;    // ステージ１のギミックを設定
+            case 5: Stage5Gimmick(); break;    // ステージ１のギミックを設定
+            //case 6: Stage6Gimmick(); break;    // ステージ１のギミックを設定
+            //case 7: Stage7Gimmick(); break;    // ステージ１のギミックを設定
+            //case 8: Stage8Gimmick(); break;    // ステージ１のギミックを設定
+            //case 9: Stage9Gimmick(); break;    // ステージ１のギミックを設定
+            //case 10: Stage10Gimmick(); break;    // ステージ１のギミックを設定
+            //case 11: Stage11Gimmick(); break;    // ステージ１のギミックを設定
+            //case 12: Stage12Gimmick(); break;    // ステージ１のギミックを設定
+            //case 13: Stage13Gimmick(); break;    // ステージ１のギミックを設定
+            //case 14: Stage14Gimmick(); break;    // ステージ１のギミックを設定
+            //case 15: Stage15Gimmick(); break;    // ステージ１のギミックを設定
+            //case 16: Stage16Gimmick(); break;    // ステージ１のギミックを設定
+            //case 17: Stage17Gimmick(); break;    // ステージ１のギミックを設定
+            //case 18: Stage18Gimmick(); break;    // ステージ１のギミックを設定
+            //case 19: Stage19Gimmick(); break;    // ステージ１のギミックを設定
+            //case 20: Stage20Gimmick(); break;    // ステージ１のギミックを設定
+            //case 21: Stage21Gimmick(); break;    // ステージ１のギミックを設定
+            //case 22: Stage22Gimmick(); break;    // ステージ１のギミックを設定
+            //case 23: Stage23Gimmick(); break;    // ステージ１のギミックを設定
+            //case 24: Stage24Gimmick(); break;    // ステージ１のギミックを設定
+            case 25: Stage25Gimmick(); break;    // ステージ１のギミックを設定
+
+        }
+    }
+
+    // ステージのギミックを設定///
+    //public void Stage1Gimmick()
+    //{
+    //    stageObject[1, 9, 8].GetComponent<Tree>().SetStartActionTurn(2);
+    //}
+    public void Stage1Gimmick()
+    {
+        //stageObject[1, 9, 8].GetComponent<Tree>().SetStartActionTurn(2);
+    }
+    public void Stage2Gimmick()
+    {
+        //高さ　縦　横
+        stageObject[1, 5, 4].GetComponent<Tree>().SetStartActionTurn(4);
+    }
+    public void Stage3Gimmick()
+    {
+    }
+    public void Stage4Gimmick()
+    {
+        //高さ　縦　横
+        stageObject[1, 5, 6].GetComponent<Tree>().SetStartActionTurn(5);
+        stageObject[1, 6, 5].GetComponent<Tree>().SetStartActionTurn(9);
+
+
+        stageObject[1, 5, 4].GetComponent<Tree>().SetStartActionTurn(7);
+    }
+    public void Stage5Gimmick()
+    {
+        //高さ　縦　横
+        stageObject[1, 4, 5].GetComponent<Tree>().SetStartActionTurn(3);
+    }
+    public void Stage25Gimmick()
+    {
+        //高さ　縦　横
+    }
+
+    // 前移動可能判定/////////////////////////////////////
+    public bool MoveFrontPossibleDecision(Player alice)
+    {
+        bool flag1;     // 前方向用フラグ
+        bool flag2;     // 前下方向用フラグ
+
+        // アリスがステージ外に来ている場合
+        if ((alice.arrayPosY == 0) ||
+            (alice.arrayPosX == 0) || (alice.arrayPosX == 10) ||
+            (alice.arrayPosZ == 0) || (alice.arrayPosZ == 10))
+        {
+            return false;   // 移動できない
+        }
+        else
+        {
+            flag1 = FrontDecision(alice);       // 前方向判定
+            flag2 = FrontDownDecision(alice);   // 前下方向判定
+
+            if ((flag1 == true) && (flag2 == true))
+            {
+                return true;    // 移動できる
+            }
+            else
+            {
+                return false;   // 移動できない
+            }
+        }
+    }
+
+    // 後移動可能判定////////////////////////////////////
+    public bool MoveBackPossibleDecision(Player alice)
+    {
+        bool flag1;     // 後方向用フラグ
+        bool flag2;     // 後下方向用フラグ
+
+        // アリスがステージ外に来ている場合
+        if ((alice.arrayPosY == 0) ||
+            (alice.arrayPosX == 0) || (alice.arrayPosX == 10) ||
+            (alice.arrayPosZ == 0) || (alice.arrayPosZ == 10))
+        {
+            return false;   // 移動できない
+        }
+        else
+        {
+            flag1 = BackDecision(alice);       // 後方向判定
+            flag2 = BackDownDecision(alice);   // 後下方向判定
+
+            if ((flag1 == true) && (flag2 == true))
+            {
+                return true;    // 移動できる
+            }
+            else
+            {
+                return false;   // 移動できない
+            }
+        }
+    }
+
+    // 左移動可能判定////////////////////////////////////
+    public bool MoveLeftPossibleDecision(Player alice)
+    {
+        bool flag1;     // 左方向用フラグ
+        bool flag2;     // 左下方向用フラグ
+
+        // アリスがステージ外に来ている場合
+        if ((alice.arrayPosY == 0) ||
+            (alice.arrayPosX == 0) || (alice.arrayPosX == 10) ||
+            (alice.arrayPosZ == 0) || (alice.arrayPosZ == 10))
+        {
+            return false;   // 移動できない
+        }
+        else
+        {
+            flag1 = LeftDecision(alice);       // 左方向判定
+            flag2 = LeftDownDecision(alice);   // 左下方向判定
+
+            if ((flag1 == true) && (flag2 == true))
+            {
+                return true;    // 移動できる
+            }
+            else
+            {
+                return false;   // 移動できない
+            }
+        }
+    }
+
+    // 右移動可能判定/////////////////////////////////////
+    public bool MoveRightPossibleDecision(Player alice)
+    {
+        bool flag1;     // 右方向用フラグ
+        bool flag2;     // 右下方向用フラグ
+
+        // アリスがステージ外に来ている場合
+        if ((alice.arrayPosY == 0) ||
+            (alice.arrayPosX == 0) || (alice.arrayPosX == 10) ||
+            (alice.arrayPosZ == 0) || (alice.arrayPosZ == 10))
+        {
+            return false;   // 移動できない
+        }
+        else
+        {
+            flag1 = RightDecision(alice);       // 右方向判定
+            flag2 = RightDownDecision(alice);   // 右下方向判定
+
+            if ((flag1 == true) && (flag2 == true))
+            {
+                return true;    // 移動できる
+            }
+            else
+            {
+                return false;   // 移動できない
+            }
+        }
+    }
+
+    // 前方向判定//////////////////////
+    bool FrontDecision(Player alice)
+    {
+        bool flag = false;
+
+        int posX = alice.arrayPosX;                     // 配列上の座標Ｘ
+        int posY = alice.arrayPosY;                     // 配列上の座標Ｙ
+        int posZ = alice.arrayPosZ;                     // 配列上の座標Ｚ
+        Player.PlayerAngle angle = alice.playerAngle;   // 向き
+
+        switch(angle)
+        {
+            case Player.PlayerAngle.FRONT: flag = BesideDecision(stage[posY, posX, posZ + 1], posX, posY, posZ + 1); break;
+            case Player.PlayerAngle.BACK: flag = BesideDecision(stage[posY, posX, posZ - 1], posX, posY, posZ - 1); break;
+            case Player.PlayerAngle.LEFT: flag = BesideDecision(stage[posY, posX - 1, posZ], posX - 1, posY, posZ); break;
+            case Player.PlayerAngle.RIGHT: flag = BesideDecision(stage[posY, posX + 1, posZ], posX + 1, posY, posZ); break;
+        }
+
+        return flag;
+    }
+
+    // 後方向判定/////////////////////
+    bool BackDecision(Player alice)
+    {
+        bool flag = false;
+
+        int posX = alice.arrayPosX;                     // 配列上の座標Ｘ
+        int posY = alice.arrayPosY;                     // 配列上の座標Ｙ
+        int posZ = alice.arrayPosZ;                     // 配列上の座標Ｚ
+        Player.PlayerAngle angle = alice.playerAngle;   // 向き
+
+        switch (angle)
+        {
+            case Player.PlayerAngle.FRONT: flag = BesideDecision(stage[posY, posX, posZ - 1], posX, posY, posZ - 1); break;
+            case Player.PlayerAngle.BACK: flag = BesideDecision(stage[posY, posX, posZ + 1], posX, posY, posZ + 1); break;
+            case Player.PlayerAngle.LEFT: flag = BesideDecision(stage[posY, posX + 1, posZ], posX + 1, posY, posZ); break;
+            case Player.PlayerAngle.RIGHT: flag = BesideDecision(stage[posY, posX - 1, posZ], posX - 1, posY, posZ); break;
+        }
+
+        return flag;
+    }
+
+    // 左方向判定/////////////////////
+    bool LeftDecision(Player alice)
+    {
+        bool flag = false;
+
+        int posX = alice.arrayPosX;                     // 配列上の座標Ｘ
+        int posY = alice.arrayPosY;                     // 配列上の座標Ｙ
+        int posZ = alice.arrayPosZ;                     // 配列上の座標Ｚ
+        Player.PlayerAngle angle = alice.playerAngle;   // 向き
+
+        switch (angle)
+        {
+            case Player.PlayerAngle.FRONT: flag = BesideDecision(stage[posY, posX - 1, posZ], posX - 1, posY, posZ); break;
+            case Player.PlayerAngle.BACK: flag = BesideDecision(stage[posY, posX + 1, posZ], posX + 1, posY, posZ); break;
+            case Player.PlayerAngle.LEFT: flag = BesideDecision(stage[posY, posX, posZ - 1], posX, posY, posZ - 1); break;
+            case Player.PlayerAngle.RIGHT: flag = BesideDecision(stage[posY, posX, posZ + 1], posX, posY, posZ + 1); break;
+        }
+
+        return flag;
+    }
+
+    // 右方向判定//////////////////////
+    bool RightDecision(Player alice)
+    {
+        bool flag = false;
+
+        int posX = alice.arrayPosX;                     // 配列上の座標Ｘ
+        int posY = alice.arrayPosY;                     // 配列上の座標Ｙ
+        int posZ = alice.arrayPosZ;                     // 配列上の座標Ｚ
+        Player.PlayerAngle angle = alice.playerAngle;   // 向き
+
+        switch (angle)
+        {
+            case Player.PlayerAngle.FRONT: flag = BesideDecision(stage[posY, posX + 1, posZ], posX + 1, posY, posZ); break;
+            case Player.PlayerAngle.BACK: flag = BesideDecision(stage[posY, posX - 1, posZ], posX - 1, posY, posZ); break;
+            case Player.PlayerAngle.LEFT: flag = BesideDecision(stage[posY, posX, posZ + 1], posX, posY, posZ + 1); break;
+            case Player.PlayerAngle.RIGHT: flag = BesideDecision(stage[posY, posX, posZ - 1], posX, posY, posZ - 1); break;
+        }
+
+        return flag;
+    }
+
+    // 前下方向判定////////////////////////
+    bool FrontDownDecision(Player alice)
+    {
+        bool flag = false;
+
+        int posX = alice.arrayPosX;                     // 配列上の座標Ｘ
+        int posY = alice.arrayPosY;                     // 配列上の座標Ｙ
+        int posZ = alice.arrayPosZ;                     // 配列上の座標Ｚ
+        Player.PlayerAngle angle = alice.playerAngle;   // 向き
+
+        switch (angle)
+        {
+            case Player.PlayerAngle.FRONT: flag = BesideDownDecision(stage[posY - 1, posX, posZ + 1], posX, posY - 1, posZ + 1); break;
+            case Player.PlayerAngle.BACK: flag = BesideDownDecision(stage[posY - 1, posX, posZ - 1], posX, posY - 1, posZ - 1); break;
+            case Player.PlayerAngle.LEFT: flag = BesideDownDecision(stage[posY - 1, posX - 1, posZ], posX - 1, posY - 1, posZ); break;
+            case Player.PlayerAngle.RIGHT: flag = BesideDownDecision(stage[posY - 1, posX + 1, posZ], posX + 1, posY - 1, posZ); break;
+        }
+
+        return flag;
+    }
+
+    // 後下方向判定///////////////////////
+    bool BackDownDecision(Player alice)
+    {
+        bool flag = false;
+
+        int posX = alice.arrayPosX;                     // 配列上の座標Ｘ
+        int posY = alice.arrayPosY;                     // 配列上の座標Ｙ
+        int posZ = alice.arrayPosZ;                     // 配列上の座標Ｚ
+        Player.PlayerAngle angle = alice.playerAngle;   // 向き
+
+        switch (angle)
+        {
+            case Player.PlayerAngle.FRONT: flag = BesideDownDecision(stage[posY - 1, posX, posZ - 1], posX, posY - 1, posZ - 1); break;
+            case Player.PlayerAngle.BACK: flag = BesideDownDecision(stage[posY - 1, posX, posZ + 1], posX, posY - 1, posZ + 1); break;
+            case Player.PlayerAngle.LEFT: flag = BesideDownDecision(stage[posY - 1, posX + 1, posZ], posX + 1, posY - 1, posZ); break;
+            case Player.PlayerAngle.RIGHT: flag = BesideDownDecision(stage[posY - 1, posX - 1, posZ], posX - 1, posY - 1, posZ); break;
+        }
+
+        return flag;
+    }
+
+    // 左下方向判定///////////////////////
+    bool LeftDownDecision(Player alice)
+    {
+        bool flag = false;
+
+        int posX = alice.arrayPosX;                     // 配列上の座標Ｘ
+        int posY = alice.arrayPosY;                     // 配列上の座標Ｙ
+        int posZ = alice.arrayPosZ;                     // 配列上の座標Ｚ
+        Player.PlayerAngle angle = alice.playerAngle;   // 向き
+
+        switch (angle)
+        {
+            case Player.PlayerAngle.FRONT: flag = BesideDownDecision(stage[posY - 1, posX - 1, posZ], posX - 1, posY - 1, posZ); break;
+            case Player.PlayerAngle.BACK: flag = BesideDownDecision(stage[posY - 1, posX + 1, posZ], posX + 1, posY - 1, posZ); break;
+            case Player.PlayerAngle.LEFT: flag = BesideDownDecision(stage[posY - 1, posX, posZ - 1], posX, posY - 1, posZ - 1); break;
+            case Player.PlayerAngle.RIGHT: flag = BesideDownDecision(stage[posY - 1, posX, posZ + 1], posX, posY - 1, posZ + 1); break;
+        }
+
+        return flag;
+    }
+
+    // 右下方向判定////////////////////////
+    bool RightDownDecision(Player alice)
+    {
+        bool flag = false;
+
+        int posX = alice.arrayPosX;                     // 配列上の座標Ｘ
+        int posY = alice.arrayPosY;                     // 配列上の座標Ｙ
+        int posZ = alice.arrayPosZ;                     // 配列上の座標Ｚ
+        Player.PlayerAngle angle = alice.playerAngle;   // 向き
+
+        switch (angle)
+        {
+            case Player.PlayerAngle.FRONT: flag = BesideDownDecision(stage[posY - 1, posX + 1, posZ], posX + 1, posY - 1, posZ); break;
+            case Player.PlayerAngle.BACK: flag = BesideDownDecision(stage[posY - 1, posX - 1, posZ], posX - 1, posY - 1, posZ); break;
+            case Player.PlayerAngle.LEFT: flag = BesideDownDecision(stage[posY - 1, posX, posZ + 1], posX, posY - 1, posZ + 1); break;
+            case Player.PlayerAngle.RIGHT: flag = BesideDownDecision(stage[posY - 1, posX, posZ - 1], posX, posY - 1, posZ - 1); break;
+        }
+
+        return flag;
+    }
+
+    // 横判定////////////////////////////////////////////////////////
+    bool BesideDecision(int gimmick, int posX, int posY, int posZ)
+    {
+        bool flag = false;
+
+        switch (gimmick)
+        {
+            case NONE:      // 何も無し
+            case BLOCK:     // ブロック
+            case START:     // スタート地点
+            case GOAL:      // ゴール地点
+            case MUSHROOM_SMALL:
+            case MUSHROOM_BIG:
+            case POTION_SMALL:
+            case POTION_BIG:
+            case BRAMBLE:
+            //ドラゴン参照
+            case CHESHIRE_CAT: // チェシャ
+            case DOOR_RED_KEY: // 鍵
+            case DOOR_BLUE_KEY: // 鍵
+            case DOOR_YELLOW_KEY: // 鍵
+            case DOOR_GREEN_KEY: // 鍵
+            //
+
+            case IVY_FRONT:
+            case IVY_BACK:
+            case IVY_LEFT:
+            case IVY_RIGHT:
+            case LADDER_FRONT:
+            case LADDER_BACK:
+            case LADDER_LEFT:
+            case LADDER_RIGHT:
+            case SOLDIER_SPADE1:
+            case SOLDIER_SPADE2:
+            case IVY_BLOCK:         // 蔦ブロック
+            case LADDER_BLOCK:      // 梯子ブロック
+            flag = true;
+                break;
+            case STAGE_1_BLOCK_1:   // ステージ１の１段目の足場ブロック
+            case STAGE_1_BLOCK_2:   // ステージ１の２段目の足場ブロック
+            case STAGE_1_BLOCK_3:   // ステージ１の３段目の足場ブロック
+            case STAGE_1_BLOCK_4:   // ステージ１の４段目の足場ブロック
+            case STAGE_1_BLOCK_5:   // ステージ１の５段目の足場ブロック
+            case STAGE_2_BLOCK_1:   // ステージ２の１段目の足場ブロック
+            case STAGE_2_BLOCK_2:   // ステージ２の２段目の足場ブロック
+            case STAGE_2_BLOCK_3:   // ステージ２の３段目の足場ブロック
+            case STAGE_2_BLOCK_4:   // ステージ２の４段目の足場ブロック
+            case STAGE_2_BLOCK_5:   // ステージ２の５段目の足場ブロック
+            case STAGE_3_BLOCK_1:   // ステージ３の１段目の足場ブロック
+            case STAGE_3_BLOCK_2:   // ステージ３の２段目の足場ブロック
+            case STAGE_3_BLOCK_3:   // ステージ３の３段目の足場ブロック
+            case STAGE_3_BLOCK_4:   // ステージ３の４段目の足場ブロック
+            case STAGE_3_BLOCK_5:   // ステージ３の５段目の足場ブロック
+            case STAGE_4_BLOCK_1:   // ステージ４の１段目の足場ブロック
+            case STAGE_4_BLOCK_2:   // ステージ４の２段目の足場ブロック
+            case STAGE_4_BLOCK_3:   // ステージ４の３段目の足場ブロック
+            case STAGE_4_BLOCK_4:   // ステージ４の４段目の足場ブロック
+            case STAGE_4_BLOCK_5:   // ステージ４の５段目の足場ブロック
+            case STAGE_5_BLOCK_1:   // ステージ５の１段目の足場ブロック
+            case STAGE_5_BLOCK_2:   // ステージ５の２段目の足場ブロック
+            case STAGE_5_BLOCK_3:   // ステージ５の３段目の足場ブロック
+            case STAGE_5_BLOCK_4:   // ステージ５の４段目の足場ブロック
+            case STAGE_5_BLOCK_5:   // ステージ５の５段目の足場ブロック
+            case WATER:             // 水
+            case SOLDIER_HEART:
+          
+                flag = false;
+                break;
+            case TREE1:
+                if (stageObject[posY, posX, posZ].GetComponent<Tree>().movePossibleFlag == true) { flag = true; }
+                else { flag = false; }
+                break;
+
+                //ドラゴン参照
+            case DOOR_RED_FRONT:
+            case DOOR_RED_BACK:
+            case DOOR_RED_LEFT:
+            case DOOR_RED_RIGHT:
+            case DOOR_BLUE_FRONT:
+            case DOOR_BLUE_BACK: 
+            case DOOR_BLUE_LEFT: 
+            case DOOR_BLUE_RIGHT:
+            case DOOR_YELLOW_FRONT:
+            case DOOR_YELLOW_BACK: 
+            case DOOR_YELLOW_LEFT:
+            case DOOR_YELLOW_RIGHT:
+            case DOOR_GREEN_FRONT: 
+            case DOOR_GREEN_BACK:
+            case DOOR_GREEN_LEFT:
+            case DOOR_GREEN_RIGHT:
+                //if ((holdKeyFlag) && (truthDoorPos_x == posX) && (truthDoorPos_y == posY) && (truthDoorPos_z == posZ) && 
+                //	((alice.GetComponent<Player>().playerDirection == 2) || (alice.GetComponent<Player>().playerDirection == 4)))
+                if (holdKeyFlag)
+                    flag = true; // 移動可能
+                else
+                    flag = false; // 移動不可
+                break;
+
+                //
+        }
+
+        return flag;
+    }
+
+    // 横下判定//////////////////////////////////////////////////////////
+    bool BesideDownDecision(int gimmick, int posX, int posY, int posZ)
+    {
+        bool flag = false;
+
+        switch (gimmick)
+        {
+            case NONE:              // 何も無し
+            case BLOCK:             // ブロック
+            case STAGE_1_BLOCK_1:   // ステージ１の１段目の足場ブロック
+            case STAGE_1_BLOCK_2:   // ステージ１の２段目の足場ブロック
+            case STAGE_1_BLOCK_3:   // ステージ１の３段目の足場ブロック
+            case STAGE_1_BLOCK_4:   // ステージ１の４段目の足場ブロック
+            case STAGE_1_BLOCK_5:   // ステージ１の５段目の足場ブロック
+            case STAGE_2_BLOCK_1:   // ステージ２の１段目の足場ブロック
+            case STAGE_2_BLOCK_2:   // ステージ２の２段目の足場ブロック
+            case STAGE_2_BLOCK_3:   // ステージ２の３段目の足場ブロック
+            case STAGE_2_BLOCK_4:   // ステージ２の４段目の足場ブロック
+            case STAGE_2_BLOCK_5:   // ステージ２の５段目の足場ブロック
+            case STAGE_3_BLOCK_1:   // ステージ３の１段目の足場ブロック
+            case STAGE_3_BLOCK_2:   // ステージ３の２段目の足場ブロック
+            case STAGE_3_BLOCK_3:   // ステージ３の３段目の足場ブロック
+            case STAGE_3_BLOCK_4:   // ステージ３の４段目の足場ブロック
+            case STAGE_3_BLOCK_5:   // ステージ３の５段目の足場ブロック
+            case STAGE_4_BLOCK_1:   // ステージ４の１段目の足場ブロック
+            case STAGE_4_BLOCK_2:   // ステージ４の２段目の足場ブロック
+            case STAGE_4_BLOCK_3:   // ステージ４の３段目の足場ブロック
+            case STAGE_4_BLOCK_4:   // ステージ４の４段目の足場ブロック
+            case STAGE_4_BLOCK_5:   // ステージ４の５段目の足場ブロック
+            case STAGE_5_BLOCK_1:   // ステージ５の１段目の足場ブロック
+            case STAGE_5_BLOCK_2:   // ステージ５の２段目の足場ブロック
+            case STAGE_5_BLOCK_3:   // ステージ５の３段目の足場ブロック
+            case STAGE_5_BLOCK_4:   // ステージ５の４段目の足場ブロック
+            case STAGE_5_BLOCK_5:   // ステージ５の５段目の足場ブロック
+            case MUSHROOM_SMALL:
+            case MUSHROOM_BIG:
+            case POTION_SMALL:
+            case POTION_BIG:
+            case START:             // スタート地点
+            case GOAL:              // ゴール地点
+            case WATER:             // 水
+            case HOLE1:
+            case HOLE2:
+            case HOLE3:
+            case HOLE4:
+            case HOLE5:
+            case IVY_BLOCK:
+            case IVY_FRONT:
+            case IVY_BACK:
+            case IVY_LEFT:
+            case IVY_RIGHT:
+            case LADDER_BLOCK:
+            case LADDER_FRONT:
+            case LADDER_BACK:
+            case LADDER_LEFT:
+            case LADDER_RIGHT:
+
+                //ドラゴン参照
+            case CHESHIRE_CAT: // チェシャ
+            case DOOR_RED_KEY: // 鍵
+            case DOOR_BLUE_KEY: // 鍵
+            case DOOR_YELLOW_KEY: // 鍵
+            case DOOR_GREEN_KEY: // 鍵
+            // 扉
+                //
+                flag = true;
+                break;
+            // 木
+            case TREE1:
+                if(stageObject[posY, posX, posZ].GetComponent<Tree>().growCount <= 2)
+                {
+                    flag = true;
+                }
+                else
+                {
+                    flag = false;
+                }
+                break;
+        }
+
+        return flag;
+    }
+
+    // ギミックとの判定
+    public void GimmickDecision(Player alice)
+    {
+        int posX = alice.arrayPosX;       // 配列上の座標Ｘ
+        int posY = alice.arrayPosY;       // 配列上の座標Ｙ
+        int posZ = alice.arrayPosZ;       // 配列上の座標Ｚ
+
+        invisibleFlag = false;
+        getKeyFlag = false;
+
+
+        switch (stage[posY, posX, posZ])
+        {
+            // 何も無し
+            case NONE:
+                break;
+            // ゴール地点
+            case GOAL:
+                // ゴール処理を書く
+                print("ゴール");
+                CameraFade.StartAlphaFade(Color.black, false, 1.0f, 0.5f, () => { Application.LoadLevel("StageSelectScene"); });
+                break;
+            // 木
+            case TREE1:
+                if (stageObject[posY, posX, posZ].GetComponent<Tree>().growCount == 2)
+                {
+                    alice.AutoMoveSetting(Player.MoveDirection.UP);
+                }
+                break;
+            // 蔦（FRONT）
+            case IVY_FRONT:
+            case LADDER_FRONT:
+                alice.climbFrontFlag = true;
+                alice.playerAngle = Player.PlayerAngle.FRONT;
+                alice.transform.localEulerAngles = alice.angleFront;
+                // 登るアニメーションフラグが偽なら
+                if((alice.getAnimationFlag(Player.Motion.CLIMB) == false) && (alice.getAnimationFlag(Player.Motion.CLIMB2) == false))
+                {
+                    alice.SetClimbPosition(Player.PlayerAngle.FRONT);   // 登り状態の座標を設定
+                    alice.SetAnimation(Player.Motion.CLIMB);            // 登るアニメーションをセット
+                }
+                break;
+            // 蔦（BACK）
+            case IVY_BACK:
+            case LADDER_BACK:
+                alice.climbBackFlag = true;
+                alice.playerAngle = Player.PlayerAngle.BACK;
+                alice.transform.localEulerAngles = alice.angleBack;
+                // 登るアニメーションフラグが偽なら
+                if ((alice.getAnimationFlag(Player.Motion.CLIMB) == false) && (alice.getAnimationFlag(Player.Motion.CLIMB2) == false))
+                {
+                    alice.SetClimbPosition(Player.PlayerAngle.BACK);    // 登り状態の座標を設定
+                    alice.SetAnimation(Player.Motion.CLIMB);            // 登るアニメーションをセット
+                }
+                break;
+            // 蔦（LEFT）
+            case IVY_LEFT:
+            case LADDER_LEFT:
+                alice.climbLeftFlag = true;
+                alice.playerAngle = Player.PlayerAngle.LEFT;
+                alice.transform.localEulerAngles = alice.angleLeft;
+                // 登るアニメーションフラグが偽なら
+                if ((alice.getAnimationFlag(Player.Motion.CLIMB) == false) && (alice.getAnimationFlag(Player.Motion.CLIMB2) == false))
+                {
+                    alice.SetClimbPosition(Player.PlayerAngle.LEFT);    // 登り状態の座標を設定
+                    alice.SetAnimation(Player.Motion.CLIMB);            // 登るアニメーションをセット
+                }
+                break;
+            // 蔦（RIGHT）
+            case IVY_RIGHT:
+            case LADDER_RIGHT:
+                alice.climbRightFlag = true;
+                alice.playerAngle = Player.PlayerAngle.RIGHT;
+                alice.transform.localEulerAngles = alice.angleRight;
+                // 登るアニメーションフラグが偽なら
+                if ((alice.getAnimationFlag(Player.Motion.CLIMB) == false) && (alice.getAnimationFlag(Player.Motion.CLIMB2) == false))
+                {
+                    alice.SetClimbPosition(Player.PlayerAngle.RIGHT);   // 登り状態の座標を設定
+                    alice.SetAnimation(Player.Motion.CLIMB);            // 登るアニメーションをセット
+                }
+                break;
+            // 鍵
+            case DOOR_RED_KEY:
+            case DOOR_BLUE_KEY:
+            case DOOR_YELLOW_KEY:
+            case DOOR_GREEN_KEY:
+                getKeyFlag = true;
+                break;
+            // 茨
+            case BRAMBLE:
+                stageObject[posY, posX, posZ].GetComponent<Bramble>().trapFlag = true;
+                break;
+            // キノコ（小さくなる）
+            case MUSHROOM_SMALL:
+                // ギミックフラグが真なら
+                if (stageObject[posY, posX, posZ].GetComponent<MushroomSmall>().GetGimmickFlag() == true)
+                {
+                    alice.mode = Player.Mode.SMALL;                                                         // プレイヤーの状態を小さいに
+                    alice.modeSmallFlag = true;                                                             // 小さくなったら切り替えるフラグを真に
+                    alice.modeSmallCount = 3;                                                               // 小さい状態のターン数に３を設定
+                    alice.modeSmallTurnCount = 0;                                                           // 小さい状態になってからのターン数に０を設定
+                    alice.ModeChange();                                                                     // 状態の変化を反映
+                    stageObject[posY, posX, posZ].GetComponent<MushroomSmall>().gimmickDrawFlag = false;    // 描画フラグを偽に
+                    stageObject[posY, posX, posZ].GetComponent<MushroomSmall>().SetGimmickFlag(false);      // ギミックフラグを偽に
+                }
+                break;
+            // キノコ（大きくなる）
+            case MUSHROOM_BIG:
+                // ギミックフラグが真なら
+                if (stageObject[posY, posX, posZ].GetComponent<MushroomBig>().GetGimmickFlag() == true)
+                {
+                    alice.mode = Player.Mode.BIG;                                                           // プレイヤーの状態を大きいに
+                    alice.modeBigFlag = true;                                                               // 大きくなったら切り替えるフラグを真に
+                    alice.modeBigCount = 3;                                                                 // 大きい状態のターン数に３を設定
+                    alice.modeBigTurnCount = 0;                                                             // 大きい状態になってからのターン数に０を設定
+                    alice.ModeChange();                                                                     // 状態の変化を反映
+                    stageObject[posY, posX, posZ].GetComponent<MushroomBig>().gimmickDrawFlag = false;      // 描画フラグを偽に
+                    stageObject[posY, posX, posZ].GetComponent<MushroomBig>().SetGimmickFlag(false);        // ギミックフラグを偽に
+                }
+                break;
+            // 薬（小さくなる）
+            case POTION_SMALL:
+                // ギミックフラグが真なら
+                if (stageObject[posY, posX, posZ].GetComponent<PotionSmall>().GetGimmickFlag() == true)
+                {
+                    alice.mode = Player.Mode.SMALL;                                                         // プレイヤーの状態を小さいに
+                    alice.modeSmallFlag = true;                                                             // 小さくなったら切り替えるフラグを真に
+                    alice.modeSmallCount = 3;                                                               // 小さい状態のターン数に３を設定
+                    alice.modeSmallTurnCount = 0;                                                           // 小さい状態になってからのターいン数に０を設定
+                    alice.ModeChange();                                                                     // 状態の変化を反映
+                    stageObject[posY, posX, posZ].GetComponent<PotionSmall>().gimmickDrawFlag = false;      // 描画フラグを偽に
+                    stageObject[posY, posX, posZ].GetComponent<PotionSmall>().SetGimmickFlag(false);        // ギミックフラグを偽に
+                }
+                break;
+            // 薬（大きくなる）
+            case POTION_BIG:
+                // ギミックフラグが真なら
+                if (stageObject[posY, posX, posZ].GetComponent<PotionBig>().GetGimmickFlag() == true)
+                {
+                    alice.mode = Player.Mode.BIG;                                                           // プレイヤーの状態を大きいに
+                    alice.modeBigFlag = true;                                                               // 大きくなったら切り替えるフラグを真に
+                    alice.modeBigCount = 3;                                                                 // 大きい状態のターン数に３を設定
+                    alice.modeBigTurnCount = 0;                                                             // 大きい状態になってからのターン数に０を設定
+                    alice.ModeChange();                                                                     // 状態の変化を反映
+                    stageObject[posY, posX, posZ].GetComponent<PotionBig>().gimmickDrawFlag = false;        // 描画フラグを偽に
+                    stageObject[posY, posX, posZ].GetComponent<PotionBig>().SetGimmickFlag(false);          // ギミックフラグを偽に
+                }
+                break;
+            // チェシャ猫
+            case CHESHIRE_CAT:
+                invisibleFlag = true;
+                break;
+        }
+
+        if (invisibleFlag)
+            alice.GetComponent<Player>().touchCheshireFlag = true;
+        else
+            alice.GetComponent<Player>().touchCheshireFlag = false;
+
+        if (getKeyFlag)
+            alice.GetComponent<Player>().touchKeyFlag = true;
+        else
+            alice.GetComponent<Player>().touchKeyFlag = false;
+
+        //
+    }
+
+    // 足元の判定
+    public void FootDecision(Player alice)
+    {
+        int posX = alice.arrayPosX;       // 配列上の座標Ｘ
+        int posY = alice.arrayPosY;       // 配列上の座標Ｙ
+        int posZ = alice.arrayPosZ;       // 配列上の座標Ｚ
+
+        // アリスが地面についていないなら
+        if (alice.arrayPosY >= 1)
+        {
+            switch (stage[posY - 1, posX, posZ])
+            {
+                case NONE:              // 何も無い
+                case START:             // スタート
+                case GOAL:              // ゴール
+                case WATER:             // 水
+                case MUSHROOM_SMALL:    // キノコ（小さくなる）
+                case MUSHROOM_BIG:      // キノコ（大きくなる）
+                case POTION_SMALL:      // 薬（小さくなる）
+                case POTION_BIG:        // 薬（大きくなる）
+                    alice.AutoMoveSetting(Player.MoveDirection.DOWN);   // 自動下移動を設定
+                    alice.SetAnimation(Player.Motion.DROP);             // 進む時の落下アニメーションをセット
+                    break;
+                case STAGE_1_BLOCK_1:
+                case STAGE_1_BLOCK_2:
+                case STAGE_5_BLOCK_1:
+                    alice.ResetAnimation(Player.Motion.DROP);           // 進む時の落下アニメーションをリセット
+                    break;
+                // 穴
+                case HOLE1:
+                case HOLE2:
+                case HOLE3:
+                case HOLE4:
+                case HOLE5:
+                    for (int y = 0; y < STAGE_Y; y++)
+                    {
+                        for (int x = 0; x < STAGE_X; x++)
+                        {
+                            for (int z = 0; z < STAGE_Z; z++)
+                            {
+                                switch(stage[posY - 1, posX, posZ])
+                                {
+                                    case HOLE1:
+                                        if (stage[y, x, z] == HOLE1 && ((y != posY - 1) || (x != posX) || (z != posZ)))
+                                        {
+                                            alice.transform.position = new Vector3(x, y + 0.5f, z);
+                                            alice.arrayPosX = x;
+                                            alice.arrayPosY = y + 1;
+                                            alice.arrayPosZ = z;
+                                            break;
+                                        }
+                                        break;
+                                    case HOLE2:
+                                        if (stage[y, x, z] == HOLE2 && ((y != posY - 1) || (x != posX) || (z != posZ)))
+                                        {
+                                            alice.transform.position = new Vector3(x, y + 0.5f, z);
+                                            alice.arrayPosX = x;
+                                            alice.arrayPosY = y + 1;
+                                            alice.arrayPosZ = z;
+                                            break;
+                                        }
+                                        break;
+                                    case HOLE3:
+                                        if (stage[y, x, z] == HOLE3 && ((y != posY - 1) || (x != posX) || (z != posZ)))
+                                        {
+                                            alice.transform.position = new Vector3(x, y + 0.5f, z);
+                                            alice.arrayPosX = x;
+                                            alice.arrayPosY = y + 1;
+                                            alice.arrayPosZ = z;
+                                            break;
+                                        }
+                                        break;
+                                    case HOLE4:
+                                        if (stage[y, x, z] == HOLE4 && ((y != posY - 1) || (x != posX) || (z != posZ)))
+                                        {
+                                            alice.transform.position = new Vector3(x, y + 0.5f, z);
+                                            alice.arrayPosX = x;
+                                            alice.arrayPosY = y + 1;
+                                            alice.arrayPosZ = z;
+                                            break;
+                                        }
+                                        break;
+                                    case HOLE5:
+                                        if (stage[y, x, z] == HOLE5 && ((y != posY - 1) || (x != posX) || (z != posZ)))
+                                        {
+                                            alice.transform.position = new Vector3(x, y + 0.5f, z);
+                                            alice.arrayPosX = x;
+                                            alice.arrayPosY = y + 1;
+                                            alice.arrayPosZ = z;
+                                            break;
+                                        }
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                    break;
+                //  木
+                case TREE1:
+                    // 木の成長段階が１以下なら
+                    if (stageObject[posY - 1, posX, posZ].GetComponent<Tree>().growCount <= 1)
+                    {
+                        alice.AutoMoveSetting(Player.MoveDirection.DOWN);
+                        alice.AnimationDropNext(true);
+                    }
+                    // 木の成長段階が１以下なら
+                    if (stageObject[posY - 1, posX, posZ].GetComponent<Tree>().growCount == 3)
+                    {
+                        alice.AutoMoveSetting(Player.MoveDirection.UP);
+                    }
+                    break;
+                // 蔦（FRONT）
+                case IVY_FRONT:
+                case LADDER_FRONT:
+                    alice.climbFront2Flag = true;
+                    alice.playerAngle = Player.PlayerAngle.FRONT;
+                    alice.transform.localEulerAngles = alice.angleFront;
+                    // 登るアニメーションフラグが偽なら
+                    if ((alice.getAnimationFlag(Player.Motion.CLIMB) == false) && (alice.getAnimationFlag(Player.Motion.CLIMB2) == false))
+                    {
+                        alice.SetClimbPosition(Player.PlayerAngle.FRONT);   // 登り状態の座標を設定
+                        alice.transform.position -= new Vector3(0, 0.5f, 0);
+                        alice.SetAnimation(Player.Motion.CLIMB2);
+                    }
+                    break;
+                // 蔦（BACK）
+                case IVY_BACK:
+                case LADDER_BACK:
+                    alice.climbBack2Flag = true;
+                    alice.playerAngle = Player.PlayerAngle.BACK;
+                    alice.transform.localEulerAngles = alice.angleBack;
+                    // 登るアニメーションフラグが偽なら
+                    if ((alice.getAnimationFlag(Player.Motion.CLIMB) == false) && (alice.getAnimationFlag(Player.Motion.CLIMB2) == false))
+                    {
+                        alice.SetClimbPosition(Player.PlayerAngle.BACK);   // 登り状態の座標を設定
+                        alice.transform.position -= new Vector3(0, 0.5f, 0);
+                        alice.SetAnimation(Player.Motion.CLIMB2);
+                    }
+                    break;
+                // 蔦（LEFT）
+                case IVY_LEFT:
+                case LADDER_LEFT:
+                    alice.climbLeft2Flag = true;
+                    alice.playerAngle = Player.PlayerAngle.LEFT;
+                    alice.transform.localEulerAngles = alice.angleLeft;
+                    // 登るアニメーションフラグが偽なら
+                    if ((alice.getAnimationFlag(Player.Motion.CLIMB) == false) && (alice.getAnimationFlag(Player.Motion.CLIMB2) == false))
+                    {
+                        alice.SetClimbPosition(Player.PlayerAngle.LEFT);   // 登り状態の座標を設定
+                        alice.transform.position -= new Vector3(0, 0.5f, 0);
+                        alice.SetAnimation(Player.Motion.CLIMB2);
+                    }
+                    break;
+                // 蔦（RIGHT）
+                case IVY_RIGHT:
+                case LADDER_RIGHT:
+                    alice.climbRight2Flag = true;
+                    alice.playerAngle = Player.PlayerAngle.RIGHT;
+                    alice.transform.localEulerAngles = alice.angleRight;
+                    // 登るアニメーションフラグが偽なら
+                    if ((alice.getAnimationFlag(Player.Motion.CLIMB) == false) && (alice.getAnimationFlag(Player.Motion.CLIMB2) == false))
+                    {
+                        alice.SetClimbPosition(Player.PlayerAngle.RIGHT);   // 登り状態の座標を設定
+                        alice.transform.position -= new Vector3(0, 0.5f, 0);
+                        alice.SetAnimation(Player.Motion.CLIMB2);
+                    }
+                    break;
+            }
+        }
+        else
+        {
+            alice.ResetAnimation(Player.Motion.DROP);           // 進む時の落下アニメーションをリセット
+        }
+    }
+
+    // 配列変更系ギミック
+    public void ArrayChangeGimmck()
+    {
+        for (int x = 0; x < STAGE_X; x++)
+        {
+            for (int y = 0; y < STAGE_Y; y++)
+            {
+                for (int z = 0; z < STAGE_Z; z++)
+                {
+                    switch (stage[y, x, z])
+                    {
+                        // 木の場合
+                        case TREE1:
+                            // 成長段階が０か１なら
+                            if (stageObject[y, x, z].GetComponent<Tree>().growCount <= 2)
+                            {
+                                stage[y + 1, x, z] = NONE;      // １つ上の配列を変更
+                            }
+                            // 成長段階が３なら
+                            else if (stageObject[y, x, z].GetComponent<Tree>().growCount == 3)
+                            {
+                                stage[y + 1, x, z] = TREE2;    // １つ上の配列を変更
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+    }
+
+    //アリスの下が穴か見る
+    public bool GetFootHOLE(Player alice)
+    {
+        int posX = alice.arrayPosX;       // 配列上の座標Ｘ
+        int posY = alice.arrayPosY;       // 配列上の座標Ｙ
+        int posZ = alice.arrayPosZ;       // 配列上の座標Ｚ
+
+        if (posY - 1 >= 0)
+        {
+            if ((stage[posY - 1, posX, posZ] == HOLE1) || (stage[posY - 1, posX, posZ] == HOLE2) ||
+                (stage[posY - 1, posX, posZ] == HOLE3) || (stage[posY - 1, posX, posZ] == HOLE4) ||
+                ((stage[posY - 1, posX, posZ] == HOLE5)))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    //ドラゴン参照
+    // 扉の開閉
+    public void OpenDoor(bool getKeyFlag)
+    {
+        if (getKeyFlag)
+        {
+            //GimmickNext(truthDoorPos_x, truthDoorPos_y, truthDoorPos_z);  // ギミックを進める
+            holdKeyFlag = true;
+        }
+        else
+        {
+            //GimmickBack(truthDoorPos_x, truthDoorPos_y, truthDoorPos_z); // ギミックを戻す
+            holdKeyFlag = false;
+        }
+        stageObject[keyPos_y, keyPos_x, keyPos_z].GetComponent<Key>().Invisible(getKeyFlag);
+    }
+
+    // ゴールしているかチェック
+    public bool GoalCheck(Player alice)
+    {
+        int posX = alice.arrayPosX;       // 配列上の座標Ｘ
+        int posY = alice.arrayPosY;       // 配列上の座標Ｙ
+        int posZ = alice.arrayPosZ;       // 配列上の座標Ｚ
+
+        if(stage[posY, posX, posZ] == GOAL)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+}

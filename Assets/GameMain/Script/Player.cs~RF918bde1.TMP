@@ -1,0 +1,176 @@
+﻿using UnityEngine;
+using System.Collections;
+
+public class Player : MonoBehaviour
+{
+    const int SAVE_NUM = 30;
+
+    // 向き
+    public enum Angle
+    {
+        FRONT,  // 前
+        BACK,   // 後
+        LEFT,   // 左
+        RIGHT,  // 右
+    }
+
+    // 方向
+    public enum Direction
+    {
+        FRONT,  // 前
+        BACK,   // 後
+        LEFT,   // 左
+        RIGHT,  // 右
+        UP,     // 上
+        DOWN,   // 下
+        STOP,   // 
+    }
+
+    public Angle angle;                                     // プレイヤーの向き
+    public Direction direction;                             // プレイヤーの移動方向
+    public int[] saveMoveDirection = new int[SAVE_NUM];     // 移動情報を保存する配列（移動する方向）
+    public bool[] saveMoveInput = new bool[SAVE_NUM];       // 移動情報を保存する配列（入力による移動か）
+
+    public Angle cameraAngle;   // カメラの向き
+    public CameraSystem camera;
+
+	public int arrayPosX;       // 配列上での座標Ｘ
+	public int arrayPosY;       // 配列上での座標Ｙ
+	public int arrayPosZ;       // 配列上での座標Ｚ
+
+    Vector3 angleFront;     // 前方向
+    Vector3 angleBack;      // 後方向
+    Vector3 angleLeft;      // 左方向
+    Vector3 angleRight;     // 右方向
+
+    // 初期化
+	void Start ()
+    {
+        angleFront = new Vector3(0, 0, 0);
+        angleBack = new Vector3(0, 180, 0);
+        angleLeft = new Vector3(0, 270, 0);
+        angleRight = new Vector3(0, 90, 0);
+
+        // 移動情報を保存する配列の初期化
+        for (int num = 0; num < SAVE_NUM; num++)
+        {
+            saveMoveDirection[num] = 0;
+            saveMoveInput[num] = false;
+        }
+	}
+
+    // 更新
+	void Update () 
+	{
+        cameraAngle = camera.rotflag;
+ 	}
+
+    // 向きの変更
+    public void ChangeAngle(Direction direction)
+    {
+        switch(direction)
+        {
+            case Direction.FRONT:
+                switch(cameraAngle)
+                {
+                    case Angle.FRONT: break;
+                    case Angle.BACK: break;
+                    case Angle.LEFT: break;
+                    case Angle.RIGHT: break;
+                }
+                break;
+            case Direction.BACK:
+                switch (cameraAngle)
+                {
+                    case Angle.FRONT: break;
+                    case Angle.BACK: break;
+                    case Angle.LEFT: break;
+                    case Angle.RIGHT: break;
+                }
+                break;
+            case Direction.LEFT:
+                switch (cameraAngle)
+                {
+                    case Angle.FRONT: break;
+                    case Angle.BACK: break;
+                    case Angle.LEFT: break;
+                    case Angle.RIGHT: break;
+                }
+                break;
+            case Direction.RIGHT:
+                switch (cameraAngle)
+                {
+                    case Angle.FRONT: break;
+                    case Angle.BACK: break;
+                    case Angle.LEFT: break;
+                    case Angle.RIGHT: break;
+                }
+                break;
+            case Direction.UP:
+                switch (cameraAngle)
+                {
+                    case Angle.FRONT: break;
+                    case Angle.BACK: break;
+                    case Angle.LEFT: break;
+                    case Angle.RIGHT: break;
+                }
+                break;
+            case Direction.DOWN:
+                switch (cameraAngle)
+                {
+                    case Angle.FRONT: break;
+                    case Angle.BACK: break;
+                    case Angle.LEFT: break;
+                    case Angle.RIGHT: break;
+                }
+                break;
+            case Direction.STOP:
+                switch (cameraAngle)
+                {
+                    case Angle.FRONT: break;
+                    case Angle.BACK: break;
+                    case Angle.LEFT: break;
+                    case Angle.RIGHT: break;
+                }
+                break;
+        }
+
+        switch (angle)
+        {
+            case Angle.FRONT: transform.localEulerAngles = angleFront; break;
+            case Angle.BACK: transform.localEulerAngles = angleBack; break;
+            case Angle.LEFT: this.transform.localEulerAngles = angleLeft; break;
+            case Angle.RIGHT: this.transform.localEulerAngles = angleRight; break;
+        }
+    }
+
+    // 前移動
+    public void MoveFront()
+    {
+        ChangeAngle(Direction.FRONT);   // 向きの変更
+    }
+
+    // 後移動
+    public void MoveBack()
+    {
+        ChangeAngle(Direction.BACK);    // 向きの変更
+    }
+
+    // 左移動
+    public void MoveLeft()
+    {
+        ChangeAngle(Direction.LEFT);    // 向きの変更
+    }
+
+    // 右移動
+    public void MoveRight()
+    {
+        ChangeAngle(Direction.RIGHT);   // 向きの変更
+    }
+
+    // 待機
+    public void MoveStop()
+    {
+        ChangeAngle(Direction.STOP);    // 向きの変更
+    }
+}

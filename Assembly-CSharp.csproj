@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+	<ProductVersion>10.0.20506</ProductVersion>
+	<SchemaVersion>2.0</SchemaVersion>
+	<ProjectGuid>{8065F3C4-00E0-E590-656F-CB6413051D90}</ProjectGuid>
+	<OutputType>Library</OutputType>
+	<AppDesignerFolder>Properties</AppDesignerFolder>
+	<RootNamespace></RootNamespace>
+	<AssemblyName>Assembly-CSharp</AssemblyName>
+	<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+	<FileAlignment>512</FileAlignment>
+	<BaseDirectory>Assets</BaseDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+	<DebugSymbols>true</DebugSymbols>
+	<DebugType>full</DebugType>
+	<Optimize>false</Optimize>
+	<OutputPath>Temp\bin\Debug\</OutputPath>
+	<DefineConstants>DEBUG;TRACE;UNITY_5_0_1;UNITY_5_0;UNITY_5;ENABLE_LICENSE_RENAME;ENABLE_NEW_BUGREPORTER;ENABLE_2D_PHYSICS;ENABLE_4_6_FEATURES;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_DUCK_TYPING;ENABLE_FRAME_DEBUGGER;ENABLE_GENERICS;ENABLE_HOME_SCREEN;ENABLE_IMAGEEFFECTS;ENABLE_LIGHT_PROBES_LEGACY;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_NEW_HIERARCHY;ENABLE_PHYSICS;ENABLE_PHYSICS_PHYSX3;ENABLE_PLUGIN_INSPECTOR;ENABLE_SHADOWS;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_AUDIOMIXER_SUSPEND;ENABLE_NONPRO;INCLUDE_DYNAMIC_GI;INCLUDE_GI;INCLUDE_IL2CPP;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_SUBSTANCE;ENABLE_TEXTUREID_MAP;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_MONO;ENABLE_PROFILER;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN</DefineConstants>
+	<ErrorReport>prompt</ErrorReport>
+	<WarningLevel>4</WarningLevel>
+	<NoWarn>0169</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+	<DebugType>pdbonly</DebugType>
+	<Optimize>true</Optimize>
+	<OutputPath>Temp\bin\Release\</OutputPath>
+	<DefineConstants>TRACE</DefineConstants>
+	<ErrorReport>prompt</ErrorReport>
+	<WarningLevel>4</WarningLevel>
+	<NoWarn>0169</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+	<Reference Include="System" />
+    <Reference Include="System.XML" />
+	<Reference Include="System.Core" />
+	<Reference Include="System.Xml.Linq" />
+	<Reference Include="UnityEngine">
+	  <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
+	</Reference>
+	<Reference Include="UnityEditor">
+	  <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
+	</Reference>
+  </ItemGroup>
+  <ItemGroup>
+     <Compile Include="Assets\Alice\Alice.cs" />
+     <Compile Include="Assets\BGM\StageBgm.cs" />
+     <Compile Include="Assets\GameMain\Script\CharacterChange.cs" />
+     <Compile Include="Assets\GameMain\Script\CharacterMove.cs" />
+     <Compile Include="Assets\GameMain\Script\CharacterTalkManager.cs" />
+     <Compile Include="Assets\GameMain\Script\CollisionScript.cs" />
+     <Compile Include="Assets\GameMain\Script\DecorationChange.cs" />
+     <Compile Include="Assets\GameMain\Script\GameMain.cs" />
+     <Compile Include="Assets\GameMain\Script\GameObjectManager.cs" />
+     <Compile Include="Assets\GameMain\Script\HageManager.cs" />
+     <Compile Include="Assets\GameMain\Script\KeyManager.cs" />
+     <Compile Include="Assets\GameMain\Script\New_CameraSystem.cs" />
+     <Compile Include="Assets\GameMain\Script\Player_Move.cs" />
+     <Compile Include="Assets\GameMain\Script\StageNumberManager.cs" />
+     <Compile Include="Assets\GameMain\Script\TimeNumberManager.cs" />
+     <Compile Include="Assets\GameMain\Script\lavel.cs" />
+     <Compile Include="Assets\Stage\GameMain.cs" />
+     <Compile Include="Assets\Stage\Stage.cs" />
+     <Compile Include="Assets\Stage\StageCreateMain.cs" />
+     <Compile Include="Assets\Stage\StageObject\Bramble\Bramble.cs" />
+     <Compile Include="Assets\Stage\StageObject\Flower\Flower.cs" />
+     <Compile Include="Assets\Stage\StageObject\Goal\Goal.cs" />
+     <Compile Include="Assets\StageSelect\Book\Book.cs" />
+     <Compile Include="Assets\StageSelect\GameSelect\GameSelect.cs" />
+     <Compile Include="Assets\StageSelect\Stage1\Stage1_Picture\Stage1_Picture.cs" />
+     <Compile Include="Assets\StageSelect\Stage2\Stage2_Picture\Stage2_Picture.cs" />
+     <Compile Include="Assets\StageSelect\Stage3\Stage3_Picture\Stage3_Picture.cs" />
+     <Compile Include="Assets\StageSelect\Stage4\Stage4_Picture\Stage4_Picture.cs" />
+     <Compile Include="Assets\StageSelect\Stage5\Stage5_Picture\Stage5_Picture.cs" />
+     <Compile Include="Assets\StoryMain\Script\AliceImage.cs" />
+     <Compile Include="Assets\StoryMain\Script\ArrowAnimation.cs" />
+     <Compile Include="Assets\StoryMain\Script\BGMChanger.cs" />
+     <Compile Include="Assets\StoryMain\Script\ChangeBackGround.cs" />
+     <Compile Include="Assets\StoryMain\Script\ChangeCharImage.cs" />
+     <Compile Include="Assets\StoryMain\Script\FlagManager.cs" />
+     <Compile Include="Assets\StoryMain\Script\NameTextController.cs" />
+     <Compile Include="Assets\StoryMain\Script\StageSelect.cs" />
+     <Compile Include="Assets\StoryMain\Script\TextController.cs" />
+     <Compile Include="Assets\Title\Sctipt\CTitle.cs" />
+     <Compile Include="Assets\Title\Sctipt\Fall_Trump.cs" />
+     <Compile Include="Assets\Title\Sctipt\GameConstants.cs" />
+     <Compile Include="Assets\Title\Sctipt\Spawn_Trump.cs" />
+     <None Include="Assets\StoryMain\Text\StageTalk\stage5-3n.txt" />
+     <None Include="Assets\StoryMain\Text\RightCharacter\rightChara2-2.txt" />
+     <None Include="Assets\StoryMain\Text\StageTalk\stage4-2.txt" />
+     <None Include="Assets\StoryMain\Text\RightCharacter\rightChara4-1.txt" />
+     <None Include="Assets\StoryMain\Text\RightCharacter\rightChara5-1.txt" />
+     <None Include="Assets\StoryMain\Text\Name\name5-1.txt" />
+     <None Include="Assets\StoryMain\Text\StageTalk\stage5-3h.txt" />
+     <None Include="Assets\StoryMain\Text\StageTalk\stage3-2.txt" />
+     <None Include="Assets\StoryMain\Text\StageTalk\stage2-1.txt" />
+     <None Include="Assets\StoryMain\Text\LeftCharacter\leftChara1-2.txt" />
+     <None Include="Assets\StoryMain\Text\Name\name1-1.txt" />
+     <None Include="Assets\StoryMain\Text\Name\name4-2.txt" />
+     <None Include="Assets\StoryMain\Text\RightCharacter\rightChara2-1.txt" />
+     <None Include="Assets\StoryMain\Text\LeftCharacter\leftChara2-1.txt" />
+     <None Include="Assets\StoryMain\Text\StageTalk\stage2-2.txt" />
+     <None Include="Assets\StoryMain\Text\LeftCharacter\leftChara2-2.txt" />
+     <None Include="Assets\StoryMain\Text\StageTalk\stage1-2.txt" />
+     <None Include="Assets\StoryMain\Text\LeftCharacter\leftChara1-1.txt" />
+     <None Include="Assets\StoryMain\Text\Name\name4-1.txt" />
+     <None Include="Assets\StoryMain\Text\error.txt" />
+     <None Include="Assets\GameMain\stage1-1.txt" />
+     <None Include="Assets\StoryMain\Text\Name\name5-2.txt" />
+     <None Include="Assets\StoryMain\Text\StageTalk\stage4-1.txt" />
+     <None Include="Assets\StoryMain\Text\Name\name2-1.txt" />
+     <None Include="Assets\StoryMain\Text\StageTalk\stage3-1.txt" />
+     <None Include="Assets\StoryMain\Text\LeftCharacter\leftChara3-2.txt" />
+     <None Include="Assets\StoryMain\Text\RightCharacter\rightChara5-3.txt" />
+     <None Include="Assets\StoryMain\Text\StageTalk\stage5-3b.txt" />
+     <None Include="Assets\StoryMain\Text\RightCharacter\rightChara1-2.txt" />
+     <None Include="Assets\StoryMain\Text\StageTalk\stage1-1.txt" />
+     <None Include="Assets\StoryMain\Text\RightCharacter\rightChara3-1.txt" />
+     <None Include="Assets\StoryMain\Text\LeftCharacter\leftChara4-1.txt" />
+     <None Include="Assets\StoryMain\Text\RightCharacter\rightChara4-2.txt" />
+     <None Include="Assets\GameMain\TestMaterial.shader" />
+     <None Include="Assets\StoryMain\Text\LeftCharacter\leftChara5-3.txt" />
+     <None Include="Assets\StoryMain\Text\Name\name5-3.txt" />
+     <None Include="Assets\StoryMain\Text\LeftCharacter\leftChara5-1.txt" />
+     <None Include="Assets\StoryMain\Text\LeftCharacter\leftChara3-1.txt" />
+     <None Include="Assets\StoryMain\Text\Name\name1-2.txt" />
+     <None Include="Assets\StoryMain\Text\RightCharacter\rightChara5-2.txt" />
+     <None Include="Assets\StoryMain\Text\Name\name2-2.txt" />
+     <None Include="Assets\StoryMain\Text\LeftCharacter\leftChara5-2.txt" />
+     <None Include="Assets\StoryMain\Text\LeftCharacter\leftChara4-2.txt" />
+     <None Include="Assets\StoryMain\Text\Name\name3-2.txt" />
+     <None Include="Assets\StoryMain\Text\RightCharacter\rightChara3-2.txt" />
+     <None Include="Assets\StoryMain\Text\RightCharacter\rightChara1-1.txt" />
+     <None Include="Assets\StoryMain\Text\StageTalk\stage5-2.txt" />
+     <None Include="Assets\StoryMain\Text\StageTalk\stage5-1.txt" />
+     <None Include="Assets\StoryMain\Text\Name\name3-1.txt" />
+ <Reference Include="UnityEngine.UI">
+ <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.iOS.Extensions.Xcode">
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/iossupport/UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
+ </Reference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+	   Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  
+</Project>

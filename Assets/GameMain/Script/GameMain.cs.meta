@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: bc5a0d5eef52c8344801097c012df648
+timeCreated: 1432171052
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - alice: {fileID: 198100, guid: adde3b09188165b498a49919948d93da, type: 2}
+  - stage: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,27 @@
+﻿using UnityEngine;
+using System.Collections;
+
+public class GameMain : MonoBehaviour
+{
+    public Stage stage;
+
+    bool aliceTurnFlag;
+    bool gimmickTurnFlag;
+
+	// Use this for initialization
+	void Start ()
+    {
+        // ステージ生成
+        stage.Create();
+	}
+	
+	// Update is called once per frame
+	void Update ()
+    {
+        // ギミック設定
+        stage.GimmickSetting();
+
+        // ギミック起動
+        stage.GimmickStart();
+	}
+}

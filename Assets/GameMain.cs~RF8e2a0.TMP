@@ -1,0 +1,34 @@
+﻿using UnityEngine;
+using System.Collections;
+
+public class GameMain : MonoBehaviour
+{
+    public GameObject alice;
+    public Stage stage;
+
+    bool aliceTurnFlag;     // アリスターンのフラグ
+    bool gimmickTurnFlag;   // ギミックターンのフラグ
+    bool finichFlag;
+    int turnNum;            // ターン数
+
+	// Use this for initialization
+	void Start ()
+    {
+        finichFlag = false;
+        aliceTurnFlag = true;
+        gimmickTurnFlag = false;
+
+        // ステージ生成
+        stage.Create();
+	}
+	
+	// Update is called once per frame
+	void Update ()
+    {
+        // ギミック設定
+        stage.GimmickSetting();
+
+        // ギミック起動
+        stage.GimmickStart();
+	}
+}
