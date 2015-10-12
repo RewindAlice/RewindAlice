@@ -120,6 +120,16 @@ public class StageSelect : MonoBehaviour
     {
         count++;
 
+        //デバッグステージ
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+
+            PlayerPrefs.SetInt("STAGE_SELECT_STAGE_NUM", 1);
+
+            PlayerPrefs.SetInt("STAGE_NUM", 0);
+            CameraFade.StartAlphaFade(Color.black, false, 1.0f, 0.5f, () => { Application.LoadLevel("GameMainScene"); });
+        }
+
         if(count >= 50 && drawFlag == false)
         {
             drawFlag = true;

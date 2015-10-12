@@ -20,9 +20,7 @@ public class TweedleDee :BaseGimmick
 
     const float MOVE_SPEED = 1.0f;    // 移動速度
     const float SPEED = 0.05f;    // 移動速度
-    public int runNumber; //ステージの端っこについたら
-    public bool startFlag;
-    public bool moving;
+
     public bool moveFlag;
     public bool returnFlag;
 
@@ -50,40 +48,16 @@ public class TweedleDee :BaseGimmick
     public int arrayPosZ;                           // 配列上での座標Ｚ
     public Vector3 buttonInputPosition;  // ボタン入力時の座標
 
-    //追加(黒い人)
-    public int backDirection;//１個前を保存する
-    //回転して進んだ時に建てます
-    public bool rotFlag1;
-    public bool rotFlag2;
-    public bool rotFlag3;
-    public bool rotFlag4;
+    //過去の向きを保存
+    public int[] beforeDirection;
+    public int[] notMoveTrun;
 
-    //規定ルートを周回した数
-    public int rotRoopCount;
-
-    //定数
-    const int SQUARE = 4;
-
-    //四角の１辺の長さ(ここをかえるとキャラの場所を変えることができます)
-    public int one_Side;
-
-    //Tweedle部分追加
-
-    public int targetBreakCount;
-
-    public bool only_Turn = false;
-
-    // 自動移動用フラグ
-    public bool autoMoveFlag;       // 自動移動フラグ
-    public MoveDirection autoMove;
-    //回転歩数を保存
-    public int[] directionPoint;
-    //回転した数
-    public int directionCount;
-
-	// Use this for initialization
+    //------------------------
+    //初期化関数
+    //------------------------
 	void Start () 
     {
+        //オブジェクトの検索
         stage = GameObject.Find("Stage");
         stageScript = stage.GetComponent<Stage>();
 
@@ -93,35 +67,40 @@ public class TweedleDee :BaseGimmick
         enemyAngle3 = new Vector3(0, 180, 0);
         enemyAngle4 = new Vector3(0, 270, 0);
 
-        startFlag = false;
+        //ボタン入力時のオブジェクトの位置
         buttonInputPosition = new Vector3(0, 0, 0);
 
-        //移動制御
-        //	dumDirection = 1;
+        //経過したターン数
         timeCount = 0;
 
-        returnFlag = false;
-        moving = false;
+        //動けるかどうか
         moveFlag = false;
-        //追加(黒人(偽))
-        backDirection = 1;
-        //方向を変えて移動したときに保存する
-        rotFlag1 = false;
-        rotFlag2 = false;
-        rotFlag3 = false;
-        rotFlag4 = false;
+        //時を戻したときの挙動かどうか
+        returnFlag = false;
+        
+        //過去の向きの保存用変数の初期化
+        beforeDirection = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-        //１つの辺あたりの長さを決める
-        one_Side = 90;
+        notMoveTrun = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-        //テスト
-        directionPoint = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        directionCount = 0;
-       
+        //初期の向きを代入
+        beforeDirection[0] = dumDirection;
 	}
 
+    //------------------------
+    //座標・向きの初期化関数
+    //------------------------
     public void Initialize(int direction, int x, int y, int z)
     {
+        //向きの初期化
         if (direction == 1)
         {
             this.transform.localEulerAngles = enemyAngle1;
@@ -142,115 +121,92 @@ public class TweedleDee :BaseGimmick
             this.transform.localEulerAngles = enemyAngle4;
             dumDirection = 2;
         }
+        
+
+        //座標の初期化
         arrayPosX = x;
         arrayPosY = y;
         arrayPosZ = z;
     }
 
+    //---------------------------------
     //アリスが動いたときに呼ばれる関数
+    //---------------------------------
     public override void OnAliceMove(int aliceMoveTime)
     {
-      
+        //リターンフラグの初期化
         returnFlag = false;
-        moving = true;
 
         //(moveScript)プレイヤーの歩数と(timeCount)歩数を比べる
         if (timeCount < aliceMoveTime)
-        {
-          
+        {     
             int roopMax = 4;
             for (int i = 0; i < roopMax; i++)
             {
-
                 switch (dumDirection)
                 {
                     case 1:
                         if ((stageScript.DumBesideDecision(arrayPosX, arrayPosY, arrayPosZ + 1)) && (stageScript.DumBesideDownDecision(arrayPosX, arrayPosY, arrayPosZ + 1)))
                         {
                             moveFlag = true;
-                           
                         }
                         break;
                     case 3:
                         if ((stageScript.DumBesideDecision(arrayPosX, arrayPosY, arrayPosZ - 1)) && (stageScript.DumBesideDownDecision(arrayPosX, arrayPosY, arrayPosZ - 1)))
+                        {    
                             moveFlag = true;
+                        }
                         break;
                     case 4:
                         if ((stageScript.DumBesideDecision(arrayPosX - 1, arrayPosY, arrayPosZ)) && (stageScript.DumBesideDownDecision(arrayPosX - 1, arrayPosY, arrayPosZ)))
+                        {
                             moveFlag = true;
+                        }
                         break;
                     case 2:
                         if ((stageScript.DumBesideDecision(arrayPosX + 1, arrayPosY, arrayPosZ)) && (stageScript.DumBesideDownDecision(arrayPosX + 1, arrayPosY, arrayPosZ)))
+                        { 
                             moveFlag = true;
+                        }
                         break;
                     default:
                         break;
                 }
+
+                //もし動くフラグがtrueなら
                 if (moveFlag == true)
                 {
                     break;
                 }
                 else
-                {//障害物があったら回転してない方向に行こうとする
-
-                    //回転させる
+                {
+                    //左回転させる
                     dumDirection--;
-                    //現在の歩数を代入しましょう
-                    directionPoint[directionCount] = timeCount;
-                    //回転した回数を増加
-                    directionCount++;
 
-                    Debug.Log("test01");
                     //向きが一周したら最初の向きに戻す
                     if (dumDirection == 0)
+                    {
                         dumDirection = 4;
+                    }
+
+                    //もし動けなかったら
+                    if(i == 3)
+                    {
+                        notMoveTrun[timeCount + 1] = 1;
+                    }
                 }
             }
 
-
-
-            //仮の保存座標に現在座標を入れる
+            //現在座標を保存
             buttonInputPosition = this.transform.localPosition;
 
-            if ((startFlag == true) && (timeCount % one_Side == 0))
-            {
-
-                ////端っこに居て回転していないとき
-                //if ((timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side) ||
-                //    (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side * 2) ||
-                //    (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side * 3) ||
-                //    (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side * 4))
-                //{
-                //    dumDirection++;
-                //}
-            }
-            startFlag = true;
-
-            //一個前の回転を保存する
-            backDirection = dumDirection;
-            //カウントを進める
+            //ターン数を進める
             timeCount++;
-            //向きが一周したら最初の向きに戻す
-            if (dumDirection == 5)
-                dumDirection = 1;
 
-            //変数に応じて回転を代入する
-            if (dumDirection == 1)
-            {
-                this.transform.localEulerAngles = enemyAngle1;
-            }
-            if (dumDirection == 2)
-            {
-                this.transform.localEulerAngles = enemyAngle2;
-            }
-            if (dumDirection == 3)
-            {
-                this.transform.localEulerAngles = enemyAngle3;
-            }
-            if (dumDirection == 4)
-            {
-                this.transform.localEulerAngles = enemyAngle4;
-            }
+            //向きを保存
+            beforeDirection[timeCount] = dumDirection;
+            //向きの変更
+            ChangeDirection();
         }
     }
 
@@ -260,284 +216,260 @@ public class TweedleDee :BaseGimmick
     {
 
         returnFlag = true;
-        //キャラが動くフラグ
-        moving = true;
-
-
+    
         if (timeCount >= aliceMoveTime)
         {
-            //歩数をとる
-            int tmp = directionCount - 1;
-            if (tmp <= 0)
-            {
-                tmp = 0;
-            }
-
-            if (directionPoint[tmp] == timeCount)
-            {
+        
                 Debug.Log("通せる");
-                only_Turn = false;
-                int roopMax = 4;
-                for (int i = 0; i < roopMax; i++)
-                {
+           if(notMoveTrun[timeCount] == 0)
+           {
+               int roopMax = 4;
+               for (int i = 0; i < roopMax; i++)
+               {
+                   Debug.Log("テスト");
+                   //deeの正面から右側を判定します。
+                   switch (dumDirection)
+                   {
+                       case 1://Tweedleの角度０の時
+                           if ((stageScript.DumBesideDecision(arrayPosX, arrayPosY, arrayPosZ - 1)) && (stageScript.DumBesideDownDecision(arrayPosX, arrayPosY, arrayPosZ - 1)))
+                           {
 
+                               moveFlag = true;
+                           }
+                           break;
+                       case 3://Tweedleの角度180の時
 
-                    if (only_Turn == false)
-                    {
-                        Debug.Log("テスト");
-                        //deeの正面から右側を判定します。
-                        switch (dumDirection)
-                        {
-                            case 1://Tweedleの角度０の時
-                                if ((stageScript.DumBesideDecision(arrayPosX + 1, arrayPosY, arrayPosZ)) && (stageScript.DumBesideDownDecision(arrayPosX + 1, arrayPosY, arrayPosZ)))
-                                {
+                           if ((stageScript.DumBesideDecision(arrayPosX, arrayPosY, arrayPosZ + 1)) && (stageScript.DumBesideDownDecision(arrayPosX, arrayPosY, arrayPosZ + 1)))
+                           {
+                               moveFlag = true;
 
-                                    moveFlag = true;
-                                }
-                                break;
-                            case 3://Tweedleの角度180の時
-                               
-                                if ((stageScript.DumBesideDecision(arrayPosX - 1, arrayPosY, arrayPosZ)) && (stageScript.DumBesideDownDecision(arrayPosX - 1, arrayPosY, arrayPosZ)))
-                                {
-                                    moveFlag = true;
+                           }
+                           break;
+                       case 4://Tweedleの角度270の時
 
-                                }
-                                break;
-                            case 4://Tweedleの角度270の時
+                           if ((stageScript.DumBesideDecision(arrayPosX + 1, arrayPosY, arrayPosZ)) && (stageScript.DumBesideDownDecision(arrayPosX + 1, arrayPosY, arrayPosZ)))
+                           {
+                               moveFlag = true;
 
-                                if ((stageScript.DumBesideDecision(arrayPosX, arrayPosY, arrayPosZ + 1)) && (stageScript.DumBesideDownDecision(arrayPosX, arrayPosY, arrayPosZ + 1)))
-                                {
-                                    moveFlag = true;
+                               Debug.Log("break２");
+                           }
 
-                                    Debug.Log("break２");
-                                }
+                           break;
+                       case 2://Tweedleの角度90の時
 
-                                break;
-                            case 2://Tweedleの角度90の時
-                             
-                                if ((stageScript.DumBesideDecision(arrayPosX, arrayPosY, arrayPosZ - 1)) && (stageScript.DumBesideDownDecision(arrayPosX, arrayPosY, arrayPosZ - 1)))
-                                {
+                           if ((stageScript.DumBesideDecision(arrayPosX - 1, arrayPosY, arrayPosZ)) && (stageScript.DumBesideDownDecision(arrayPosX - 1, arrayPosY, arrayPosZ)))
+                           {
 
-                                    moveFlag = true;
-                                }
-                                break;
-                            default:
-                                break;
-                        }
-                        if (moveFlag == true)
-                        {
-                            break;
-                        }
+                               moveFlag = true;
+                           }
+                           break;
+                       default:
+                           break;
+                   }
+                   if (moveFlag == true)
+                   {
+                       break;
+                   }
+                   else
+                   {
+                       // 回転させる
+                       dumDirection++;
 
-                        else
-                        {
-                            // 回転させる
-                            dumDirection++;
-                            //一回しか回転できなくする
-                            only_Turn = true;
-                            //回転座標を戻す
-                            directionCount--;
-                            Debug.Log("てスrp");
-                            //向きが一周したら最初の向きに戻す
-                            if (dumDirection == 5)
-                                dumDirection = 1;
-                        }
-                    }
-                }
-            }
+                       //向きが一周したら最初の向きに戻す
+                       if (dumDirection == 5)
+                           dumDirection = 1;
+                   }
 
-
-
-
-            //if ((startFlag == true) && (timeCount % one_Side == 0))
-            //{
-            //    //端っこにいて回転した後だった場合
-            //    if ((timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side) ||
-            //        (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side * 2) ||
-            //        (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side * 3) ||
-            //        (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side * 4))
-            //    {
-            //        dumDirection--;
-
-            //        //回転変数が一周したら
-            //        if (dumDirection == 0)
-            //        {
-            //            dumDirection = 4;
-            //        }
-            //    }
-            //}
-            //else
-            //{
-            //    startFlag = true;
-            //}
-
-            //変数に応じて回転を代入する
-            if (dumDirection == 1)
-            {
-                this.transform.localEulerAngles = enemyAngle1;
-            }
-            if (dumDirection == 2)
-            {
-                this.transform.localEulerAngles = enemyAngle2;
-            }
-            if (dumDirection == 3)
-            {
-                this.transform.localEulerAngles = enemyAngle3;
-            }
-            if (dumDirection == 4)
-            {
-                this.transform.localEulerAngles = enemyAngle4;
-            }
-
-            backDirection = dumDirection;
-            //カウントを戻す
-            timeCount -= 1;
-
-            //this.transform.Translate(Vector3.forward * -MOVE_SPEED);
-            //仮の保存座標に現在座標に入れる
-            buttonInputPosition = this.transform.localPosition;
-
+               }
+           }
         }
 
-        if (timeCount == 0)
-        {
-            startFlag = false;
-        }
+
+        notMoveTrun[timeCount] = 0;
+
+        //カウントを戻す
+        timeCount -= 1;
+ 
+      
+        //仮の保存座標に現在座標に入れる
+        buttonInputPosition = this.transform.localPosition;
+
     }
 
-
-	// Update is called once per frame
+    //-----------------
+	//アップデート関数
+    //-----------------
 	void Update () 
     {
+        //動かす
         Move();
 	}
 
-
-    // 自動移動設定
-    public void AutoMoveSetting(MoveDirection direction)
-    {
-        autoMoveFlag = true;
-        autoMove = direction;
-    }
-
-
-    //実際に動かす時
+    //---------------
+    //移動させる関数
+    //---------------
     public void Move()
     {
-        //----------------------
-        switch (moving)
+        switch (returnFlag)
         {
-            case true:
-               
-                switch (returnFlag)
+            //ターン数が進むとき
+            case false:
+                if (moveFlag)
                 {
-                    case false://進むとき
-                        if (moveFlag)
-                        {
-                           
-                            transform.Translate(Vector3.forward * SPEED);
-                            //以下停止コード
-                            switch (dumDirection)
+                    //動くスピードを設定
+                    transform.Translate(Vector3.forward * SPEED);
+                    
+                    //以下停止コード
+                    switch (dumDirection)
+                    {
+                        //Z軸を調整する
+                        case 1:
+                            //目的地に着いたとき
+                            if (transform.localPosition.z >= buttonInputPosition.z + 1)
                             {
-                                //Z軸を調整する
-                                case 1:
-                                    //目的地に着いたとき
-                                    if (transform.localPosition.z >= buttonInputPosition.z + 1)
-                                    {
-                                        Vector3 position = new Vector3(transform.localPosition.x, transform.localPosition.y, buttonInputPosition.z + 1);
-                                        MoveFinish(position, ArrayMove.PLUS_Z);
-                                    }
-                                    break;
-                                case 3:
-                                    //目的地に着いたとき
-                                    if (transform.localPosition.z <= buttonInputPosition.z - 1)
-                                    {
-                                        Vector3 position = new Vector3(transform.localPosition.x, transform.localPosition.y, buttonInputPosition.z - 1);
-                                        //移動終了時に呼ばれる
-                                        MoveFinish(position, ArrayMove.MINUS_Z);
-                                    }
-                                    break;
-
-                                //X軸を調整する
-                                case 4:
-                                    //目的地に着いたとき
-                                    if (transform.localPosition.x <= buttonInputPosition.x - 1)
-                                    {
-                                        Vector3 position = new Vector3(buttonInputPosition.x - 1, transform.localPosition.y, transform.localPosition.z);
-                                        MoveFinish(position, ArrayMove.MINUS_X);
-                                    }
-                                    break;
-                                case 2:
-                                    //目的地に着いたとき
-                                    if (transform.localPosition.x >= buttonInputPosition.x + 1)
-                                    {
-                                        Vector3 position = new Vector3(buttonInputPosition.x + 1, transform.localPosition.y, transform.localPosition.z);
-                                        //移動終了
-                                        MoveFinish(position, ArrayMove.PLUS_X);
-                                    }
-                                    break;
+                                //誤差の調節
+                                Vector3 position = new Vector3(transform.localPosition.x, transform.localPosition.y, buttonInputPosition.z + 1);
+                                //移動を終える
+                                MoveFinish(position, ArrayMove.PLUS_Z);
                             }
-                        }
-                        else
-                        {
-                            moving = false;
-                            moveFlag = false;
-                        }
-                        break;
+                            break;
+                        case 3:
+                            //目的地に着いたとき
+                            if (transform.localPosition.z <= buttonInputPosition.z - 1)
+                            {
+                                //誤差の調節
+                                Vector3 position = new Vector3(transform.localPosition.x, transform.localPosition.y, buttonInputPosition.z - 1);
+                                //移動を終える
+                                MoveFinish(position, ArrayMove.MINUS_Z);
+                            }
+                            break;
 
-                    case true://戻るとき
-                        //実際の移動部分
-                        transform.Translate(Vector3.back * SPEED);
-                        //以下停止コード
-
-                        if (transform.localPosition.z <= buttonInputPosition.z - 1)
-                        {
-                            Vector3 position = new Vector3(transform.localPosition.x, transform.localPosition.y, buttonInputPosition.z - 1);
-                            MoveFinish(position, ArrayMove.MINUS_Z);
-                            //moveDirection = MoveDirection.FRONT;
-                        }
-
-                        if (transform.localPosition.z >= buttonInputPosition.z + 1)
-                        {
-                            Vector3 position = new Vector3(transform.localPosition.x, transform.localPosition.y, buttonInputPosition.z + 1);
-                            MoveFinish(position, ArrayMove.PLUS_Z);
-                            //moveDirection = MoveDirection.BACK;
-                        }
-                        if (transform.localPosition.x >= buttonInputPosition.x + 1)
-                        {
-                            Vector3 position = new Vector3(buttonInputPosition.x + 1, transform.localPosition.y, transform.localPosition.z);
-                            MoveFinish(position, ArrayMove.PLUS_X);
-                        }
-                        //moveDirection = MoveDirection.LEFT;
-                        if (transform.localPosition.x <= buttonInputPosition.x - 1)
-                        {
-
-                            Vector3 position = new Vector3(buttonInputPosition.x - 1, transform.localPosition.y, transform.localPosition.z);
-                            MoveFinish(position, ArrayMove.MINUS_X);
-                            // moveDirection = MoveDirection.RIGHT;
-                        }
-                        break;
+                        //X軸を調整する
+                        case 4:
+                            //目的地に着いたとき
+                            if (transform.localPosition.x <= buttonInputPosition.x - 1)
+                            {
+                                //誤差の調節
+                                Vector3 position = new Vector3(buttonInputPosition.x - 1, transform.localPosition.y, transform.localPosition.z);
+                                //移動を終える
+                                MoveFinish(position, ArrayMove.MINUS_X);
+                            }
+                            break;
+                        case 2:
+                            //目的地に着いたとき
+                            if (transform.localPosition.x >= buttonInputPosition.x + 1)
+                            {
+                                //誤差の調節
+                                Vector3 position = new Vector3(buttonInputPosition.x + 1, transform.localPosition.y, transform.localPosition.z);
+                                //移動を終える
+                                MoveFinish(position, ArrayMove.PLUS_X);
+                            }
+                            break;
+                    }
+                }
+                else
+                {
+                    moveFlag = false;
                 }
                 break;
-            //移動が許可されてないとき
-            case false:
+
+            //ターン数が戻るとき
+            case true:
+                       
+                if (moveFlag)
+                {
+                    //動くスピードを設定
+                    transform.Translate(Vector3.back * SPEED);
+
+                    //以下停止コード
+                    switch (dumDirection)
+                    {
+                        //Z軸を調整する
+                        case 1:
+                            if (transform.localPosition.z <= buttonInputPosition.z - 1)
+                            {
+                                //誤差の調節
+                                Vector3 position = new Vector3(transform.localPosition.x, transform.localPosition.y, buttonInputPosition.z - 1);
+                                //移動を終える
+                                MoveFinish(position, ArrayMove.MINUS_Z);
+                              
+                            }
+                            break;
+                        case 3:
+                            //目的地に着いたとき
+                            if (transform.localPosition.z >= buttonInputPosition.z + 1)
+                            {
+                                //誤差の調節
+                                Vector3 position = new Vector3(transform.localPosition.x, transform.localPosition.y, buttonInputPosition.z + 1);
+                                //移動を終える
+                                MoveFinish(position, ArrayMove.PLUS_Z);
+                           
+                            }
+                            break;
+
+                        //X軸を調整する
+                        case 4:
+                            //目的地に着いたとき
+                            if (transform.localPosition.x >= buttonInputPosition.x + 1)
+                            {
+                                //誤差の調節
+                                Vector3 position = new Vector3(buttonInputPosition.x + 1, transform.localPosition.y, transform.localPosition.z);
+                                //移動を終える
+                                MoveFinish(position, ArrayMove.PLUS_X);
+                            }
+                            break;
+                        case 2:
+                            //目的地に着いたとき
+                            if (transform.localPosition.x <= buttonInputPosition.x - 1)
+                            {
+                                //誤差の調節
+                                Vector3 position = new Vector3(buttonInputPosition.x - 1, transform.localPosition.y, transform.localPosition.z);
+                                //移動を終える
+                                MoveFinish(position, ArrayMove.MINUS_X);
+                            
+                            }
+                            break;
+                    }
+                }
+                else
+                {
+                    moveFlag = false;
+                }
+                      
                 break;
         }
+   
     }
 
-    // 移動完了
+    //-------------------
+    //移動完了時呼ぶ関数
+    //-------------------
     public void MoveFinish(Vector3 position, ArrayMove arrayMove)
     {
         transform.localPosition = position;     // 座標を変更
         ChangeArrayPosition(arrayMove);         // 配列上の位置を変更
-        moving = false;
         stageScript.DumGimmickDecision(arrayPosX, arrayPosY, arrayPosZ);
-        //moveAction = MoveAction.NONE;           // アリスの行動を無しに
-        //moveFinishFlag = true;                  // 移動完了フラグを真に
+
+        //ターン数が戻った時の処理なら
+        if(returnFlag == true)
+        {
+            //前回の向きの取得
+            dumDirection = beforeDirection[timeCount];
+            
+            //向きの変更
+            ChangeDirection();
+            
+           
+        }
+        //リターンフラグの初期化
+        returnFlag = false;
+        //動きを止める
         moveFlag = false;
     }
 
-    // 配列上の位置を変更する
+    //---------------------------
+    //配列上の位置を変更する関数
+    //---------------------------
     public void ChangeArrayPosition(ArrayMove arrayMove)
     {
         switch (arrayMove)
@@ -548,6 +480,30 @@ public class TweedleDee :BaseGimmick
             case ArrayMove.MINUS_Y: arrayPosY--; break;     // 配列上の座標Yに１マイナス
             case ArrayMove.PLUS_Z: arrayPosZ++; break;      // 配列上の座標Zに１プラス
             case ArrayMove.MINUS_Z: arrayPosZ--; break;     // 配列上の座標Zに１マイナス
+        }
+    }
+
+    //---------------------
+    //向きの変更をする関数
+    //---------------------
+    public void ChangeDirection()
+    {
+        //変数に応じて回転を代入する
+        if (dumDirection == 1)
+        {
+            this.transform.localEulerAngles = enemyAngle1;
+        }
+        if (dumDirection == 2)
+        {
+            this.transform.localEulerAngles = enemyAngle2;
+        }
+        if (dumDirection == 3)
+        {
+            this.transform.localEulerAngles = enemyAngle3;
+        }
+        if (dumDirection == 4)
+        {
+            this.transform.localEulerAngles = enemyAngle4;
         }
     }
 

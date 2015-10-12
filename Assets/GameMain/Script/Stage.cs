@@ -742,61 +742,61 @@ public class Stage : MonoBehaviour
             // 双子（左）
             case TWINS_LEFT_FRONT:
                 stageObject[y, x, z] = GameObject.Instantiate(twinsLeft, new Vector3(x, y - 0.5f, z), Quaternion.identity) as GameObject;
-                stageObject[y, x, z].GetComponent<TweedleDum>().Initialize(DIRECTION_1, x, y, z);
-                presenceDum = true;
-                Dum = stageObject[y, x, z].GetComponent<TweedleDum>();
+                stageObject[y, x, z].GetComponent<TweedleDee>().Initialize(DIRECTION_1, x, y, z);
+                presenceDee = true;
+                Dee = stageObject[y, x, z].GetComponent<TweedleDee>();
                 break;
             // 双子（右）
             case TWINS_RIGHT_FRONT:
                 stageObject[y, x, z] = GameObject.Instantiate(twinsRight, new Vector3(x, y - 0.5f, z), Quaternion.identity) as GameObject;
-                stageObject[y, x, z].GetComponent<TweedleDee>().Initialize(DIRECTION_1, x, y, z);
-                presenceDee = true;
-                Dee = stageObject[y, x, z].GetComponent<TweedleDee>();
+                stageObject[y, x, z].GetComponent<TweedleDum>().Initialize(DIRECTION_1, x, y, z);
+                presenceDum = true;
+                Dum = stageObject[y, x, z].GetComponent<TweedleDum>();
                 break;
 
             // 双子（左）
             case TWINS_LEFT_BACK:
                 stageObject[y, x, z] = GameObject.Instantiate(twinsLeft, new Vector3(x, y - 0.5f, z), Quaternion.identity) as GameObject;
-                stageObject[y, x, z].GetComponent<TweedleDum>().Initialize(DIRECTION_2, x, y, z);
-                presenceDum = true;
-                Dum = stageObject[y, x, z].GetComponent<TweedleDum>();
+                stageObject[y, x, z].GetComponent<TweedleDee>().Initialize(DIRECTION_2, x, y, z);
+                presenceDee = true;
+                Dee = stageObject[y, x, z].GetComponent<TweedleDee>();
                 break;
             // 双子（右）
             case TWINS_RIGHT_BACK:
                 stageObject[y, x, z] = GameObject.Instantiate(twinsRight, new Vector3(x, y - 0.5f, z), Quaternion.identity) as GameObject;
-                stageObject[y, x, z].GetComponent<TweedleDee>().Initialize(DIRECTION_2, x, y, z);
-                presenceDee = true;
-                Dee = stageObject[y, x, z].GetComponent<TweedleDee>();
+                stageObject[y, x, z].GetComponent<TweedleDum>().Initialize(DIRECTION_2, x, y, z);
+                presenceDum = true;
+                Dum = stageObject[y, x, z].GetComponent<TweedleDum>();
                 break;
 
             // 双子（左）
             case TWINS_LEFT_LEFT:
                 stageObject[y, x, z] = GameObject.Instantiate(twinsLeft, new Vector3(x, y - 0.5f, z), Quaternion.identity) as GameObject;
-                stageObject[y, x, z].GetComponent<TweedleDum>().Initialize(DIRECTION_3, x, y, z);
-                presenceDum = true;
-                Dum = stageObject[y, x, z].GetComponent<TweedleDum>();
+                stageObject[y, x, z].GetComponent<TweedleDee>().Initialize(DIRECTION_3, x, y, z);
+                presenceDee = true;
+                Dee = stageObject[y, x, z].GetComponent<TweedleDee>();
                 break;
             // 双子（右）
             case TWINS_RIGHT_LEFT:
                 stageObject[y, x, z] = GameObject.Instantiate(twinsRight, new Vector3(x, y - 0.5f, z), Quaternion.identity) as GameObject;
-                stageObject[y, x, z].GetComponent<TweedleDee>().Initialize(DIRECTION_3, x, y, z);
-                presenceDee = true;
-                Dee = stageObject[y, x, z].GetComponent<TweedleDee>();
+                stageObject[y, x, z].GetComponent<TweedleDum>().Initialize(DIRECTION_3, x, y, z);
+                presenceDum = true;
+                Dum = stageObject[y, x, z].GetComponent<TweedleDum>();
                 break;
 
             // 双子（左）
             case TWINS_LEFT_RIGHT:
                 stageObject[y, x, z] = GameObject.Instantiate(twinsLeft, new Vector3(x, y - 0.5f, z), Quaternion.identity) as GameObject;
-                stageObject[y, x, z].GetComponent<TweedleDum>().Initialize(DIRECTION_4, x, y, z);
-                presenceDum = true;
-                Dum = stageObject[y, x, z].GetComponent<TweedleDum>();
+                stageObject[y, x, z].GetComponent<TweedleDee>().Initialize(DIRECTION_4, x, y, z);
+                presenceDee = true;
+                Dee = stageObject[y, x, z].GetComponent<TweedleDee>();
                 break;
             // 双子（右）
             case TWINS_RIGHT_RIGHT:
                 stageObject[y, x, z] = GameObject.Instantiate(twinsRight, new Vector3(x, y - 0.5f, z), Quaternion.identity) as GameObject;
-                stageObject[y, x, z].GetComponent<TweedleDee>().Initialize(DIRECTION_4, x, y, z);
-                presenceDee = true;
-                Dee = stageObject[y, x, z].GetComponent<TweedleDee>();
+                stageObject[y, x, z].GetComponent<TweedleDum>().Initialize(DIRECTION_4, x, y, z);
+                presenceDum = true;
+                Dum = stageObject[y, x, z].GetComponent<TweedleDum>();
                 break;
             // ハンプティ―
             case EGG:
@@ -897,6 +897,9 @@ public class Stage : MonoBehaviour
     {
         switch (stageNum)
         {
+            case 0: StageDebug(); break;
+
+
             case 1: Stage1(); break;    // ステージ１を設定
             case 2: Stage2(); break;    // ステージ２を設定
             case 3: Stage3(); break;    // ステージ３を設定
@@ -3279,6 +3282,101 @@ public class Stage : MonoBehaviour
         }
     }
 
+    //デバッグステージ
+    public void StageDebug()
+    {
+        Field stage1Field = Field.STAGE_1;
+        int stageTurnCount = 99;
+
+        int[, ,] stage20 = new int[,,]
+        {
+            {
+                // １段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0, 11, 11, 11, 11, 11, 11, 11, 11, 11,  0},
+                {  0, 11, 11, 11, 11, 11, 11, 11, 11, 11,  0},
+                {  0, 11, 11, 11, 11, 11, 11, 11, 11, 11,  0},
+                {  0, 11, 11, 11, 11, 11, 11, 11, 11, 11,  0},
+                {  0, 11, 11, 11, 11, 11, 11, 11, 11, 11,  0},
+                {  0, 11, 11, 11, 11, 11, 11, 11, 11, 11,  0},
+                {  0, 11, 11, 11, 11, 11, 11, 11, 11, 11,  0},
+                {  0, 11, 11, 11, 11, 11, 11, 11, 11, 11,  0},
+                {  0, 11, 11, 11, 11, 11, 11, 11, 11, 11,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ２段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0, 11, 11,  0,  0,  0,  0,  0,  0},
+                {  0,  -1, 0,113, 11,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0, 11,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ３段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ４段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+            {
+                // ５段目
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+            },
+        };
+
+        field = stage1Field;
+        turnCount = stageTurnCount;
+
+        for (int x = 0; x < STAGE_X; x++)
+        {
+            for (int y = 0; y < STAGE_Y; y++)
+            {
+                for (int z = 0; z < STAGE_Z; z++)
+                {
+                    stage[y, x, z] = stage20[y, x, z];
+                }
+            }
+        }
+    }
+
     public void SettingStageGimmick(int stageNum)
     {
         switch (stageNum)
@@ -3309,7 +3407,14 @@ public class Stage : MonoBehaviour
             case 24: Stage24Gimmick(); break;   // ステージ２４のギミックを設定
             case 25: Stage25Gimmick(); break;   // ステージ２５のギミックを設定
 
+            case 0: StageDebugGimmick(); break;   // ステージ２５のギミックを設定
+
         }
+    }
+    // ステージのギミックを設定///
+    public void StageDebugGimmick()
+    {
+        //stageObject[1, 9, 8].GetComponent<Tree>().SetStartActionTurn(2);
     }
 
     // ステージのギミックを設定///
@@ -3344,14 +3449,6 @@ public class Stage : MonoBehaviour
     {
         //高さ　縦　横
     }
-
-    /// <summary>
-    /// ///////////////////////////////////////////////////////
-    /// </summary>
-
-
-
-    //ステージ追加
     public void Stage7Gimmick()
     {
 
@@ -3361,12 +3458,10 @@ public class Stage : MonoBehaviour
         //高さ　縦　横
         stageObject[1, 5, 7].GetComponent<Tree>().SetStartActionTurn(6);
     }
-    //ステージ追加
     public void Stage9Gimmick()
     {
 
     }
-    //ステージ追加
     public void Stage10Gimmick()
     {
         stageObject[1, 5, 4].GetComponent<Tree>().SetStartActionTurn(2);
@@ -3379,14 +3474,12 @@ public class Stage : MonoBehaviour
     {
 
     }
-    //ステージ追加
     public void Stage12Gimmick()
     {
         //高さ　縦　横
         stageObject[2, 4, 6].GetComponent<Ivy>().SetStartActionTurn(10);
         stageObject[2, 5, 5].GetComponent<Ivy>().SetStartActionTurn(3);
     }
-    //ステージ追加
     public void Stage13Gimmick()
     {
         //高さ　縦　横
@@ -3394,7 +3487,6 @@ public class Stage : MonoBehaviour
 
         stageObject[1, 5, 6].GetComponent<Ivy>().SetStartActionTurn(15);
     }
-    //ステージ追加
     public void Stage14Gimmick()
     {
 
@@ -3415,62 +3507,44 @@ public class Stage : MonoBehaviour
         stageObject[2, 6, 6].GetComponent<Ivy>().SetStartActionTurn(15);
 
     }
-    //ステージ追加
     public void Stage15Gimmick()
     {
 
 
     }
-
-
-
-    //////////////////////////////////////////////////////////////
     public void Stage16Gimmick()
     {
         //高さ　縦　横
     }
-
-    //ステージ追加
     public void Stage17Gimmick()
     {
         stageObject[1, 8, 3].GetComponent<Tree>().SetStartActionTurn(2);
     }
-
-    //ステージ追加
     public void Stage18Gimmick()
     {
 
     }
-
-    //ステージ追加
     public void Stage19Gimmick()
     {
         stageObject[1, 7, 8].GetComponent<Tree>().SetStartActionTurn(6);
         stageObject[1, 2, 8].GetComponent<Tree>().SetStartActionTurn(5);
     }
-
-    //ステージ追加
     public void Stage20Gimmick()
     {
         stageObject[1, 7, 4].GetComponent<Tree>().SetStartActionTurn(13);
     }
-
-    //ステージ追加
     public void Stage21Gimmick()
     {
         stageObject[1, 6, 7].GetComponent<SpadeSoldier>().SetData(4, 2, true, 1, 6, 7);
 
         stageObject[1, 4, 4].GetComponent<HeartSoldier>().SetData(4, 1, 4, 4);
     }
-    //ステージ追加
     public void Stage22Gimmick()
     {
         stageObject[1, 6, 8].GetComponent<SpadeSoldier>().SetData(3, 2, true, 1, 6, 8);
 
         stageObject[1, 3, 5].GetComponent<HeartSoldier>().SetData(3, 1, 3, 5);
     }
-
-    //ステージ追加
     public void Stage23Gimmick()
     {
         stageObject[1, 6, 7].GetComponent<SpadeSoldier>().SetData(3, 2, true, 1, 6, 7);
@@ -3480,8 +3554,6 @@ public class Stage : MonoBehaviour
         stageObject[1, 6, 3].GetComponent<HeartSoldier>().SetData(2, 1, 6, 3);
 
     }
-
-    //ステージ追加
     public void Stage24Gimmick()
     {
         stageObject[1, 6, 3].GetComponent<SpadeSoldier>().SetData(1, 4, false, 1, 6, 3);
@@ -3501,8 +3573,6 @@ public class Stage : MonoBehaviour
         stageObject[1, 8, 6].GetComponent<Ivy>().SetStartActionTurn(30);
         stageObject[1, 9, 5].GetComponent<Ivy>().SetStartActionTurn(30);
     }
-
-
 
     // 前移動可能判定/////////////////////////////////////
     public bool MoveFrontPossibleDecision(Player alice)
@@ -4845,6 +4915,8 @@ public class Stage : MonoBehaviour
             case LADDER_RIGHT:
             case SOLDIER_SPADE1:
             case SOLDIER_SPADE2:
+            case TWINS_LEFT_FRONT:
+            case TWINS_RIGHT_FRONT:
                 flag = true;
                 break;
 
