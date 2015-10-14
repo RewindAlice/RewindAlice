@@ -3,8 +3,10 @@ using System.Collections;
 
 public class TweedleDee :BaseGimmick
 {
+    //ステージオブジェクト
     public GameObject stage;
     public Stage stageScript;
+
     // 移動方向
     public enum MoveDirection
     {
@@ -19,12 +21,13 @@ public class TweedleDee :BaseGimmick
     }
 
     const float MOVE_SPEED = 1.0f;    // 移動速度
-    const float SPEED = 0.05f;    // 移動速度
+    const float SPEED = 0.05f;        // 移動速度
 
-    public bool moveFlag;
-    public bool returnFlag;
+    public bool moveFlag;             //動くかどうか
+    public bool returnFlag;           //ターン数が戻るかどうか
 
-    public int dumDirection;
+    //キャラクターの向き
+    public int direction;
     //キャラの歩数計算
     public int timeCount;
 
@@ -92,7 +95,7 @@ public class TweedleDee :BaseGimmick
                                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
         //初期の向きを代入
-        beforeDirection[0] = dumDirection;
+        beforeDirection[0] = direction;
 	}
 
     //------------------------
@@ -101,28 +104,8 @@ public class TweedleDee :BaseGimmick
     public void Initialize(int direction, int x, int y, int z)
     {
         //向きの初期化
-        if (direction == 1)
-        {
-            this.transform.localEulerAngles = enemyAngle1;
-            dumDirection = 1;
-        }
-        else if (direction == 2)
-        {
-            this.transform.localEulerAngles = enemyAngle2;
-            dumDirection = 3;
-        }
-        else if (direction == 3)
-        {
-            this.transform.localEulerAngles = enemyAngle3;
-            dumDirection = 4;
-        }
-        else if (direction == 4)
-        {
-            this.transform.localEulerAngles = enemyAngle4;
-            dumDirection = 2;
-        }
-        
-
+        this.direction = direction;
+        ChangeDirection();
         //座標の初期化
         arrayPosX = x;
         arrayPosY = y;
@@ -143,7 +126,7 @@ public class TweedleDee :BaseGimmick
             int roopMax = 4;
             for (int i = 0; i < roopMax; i++)
             {
-                switch (dumDirection)
+                switch (direction)
                 {
                     case 1:
                         if ((stageScript.DumBesideDecision(arrayPosX, arrayPosY, arrayPosZ + 1)) && (stageScript.DumBesideDownDecision(arrayPosX, arrayPosY, arrayPosZ + 1)))
@@ -181,12 +164,12 @@ public class TweedleDee :BaseGimmick
                 else
                 {
                     //左回転させる
-                    dumDirection--;
+                    direction--;
 
                     //向きが一周したら最初の向きに戻す
-                    if (dumDirection == 0)
+                    if (direction == 0)
                     {
-                        dumDirection = 4;
+                        direction = 4;
                     }
 
                     //もし動けなかったら
@@ -204,14 +187,15 @@ public class TweedleDee :BaseGimmick
             timeCount++;
 
             //向きを保存
-            beforeDirection[timeCount] = dumDirection;
+            beforeDirection[timeCount] = direction;
             //向きの変更
             ChangeDirection();
         }
     }
 
-
-    //アリスが戻った時に呼ばれる関数
+    //----------------------------------
+    //アリスが時を戻した時に呼ばれる関数
+    //----------------------------------
     public override void OnAliceReturn(int aliceMoveTime)
     {
 
@@ -219,72 +203,13 @@ public class TweedleDee :BaseGimmick
     
         if (timeCount >= aliceMoveTime)
         {
-        
-                Debug.Log("通せる");
            if(notMoveTrun[timeCount] == 0)
            {
-               int roopMax = 4;
-               for (int i = 0; i < roopMax; i++)
-               {
-                   Debug.Log("テスト");
-                   //deeの正面から右側を判定します。
-                   switch (dumDirection)
-                   {
-                       case 1://Tweedleの角度０の時
-                           if ((stageScript.DumBesideDecision(arrayPosX, arrayPosY, arrayPosZ - 1)) && (stageScript.DumBesideDownDecision(arrayPosX, arrayPosY, arrayPosZ - 1)))
-                           {
-
-                               moveFlag = true;
-                           }
-                           break;
-                       case 3://Tweedleの角度180の時
-
-                           if ((stageScript.DumBesideDecision(arrayPosX, arrayPosY, arrayPosZ + 1)) && (stageScript.DumBesideDownDecision(arrayPosX, arrayPosY, arrayPosZ + 1)))
-                           {
-                               moveFlag = true;
-
-                           }
-                           break;
-                       case 4://Tweedleの角度270の時
-
-                           if ((stageScript.DumBesideDecision(arrayPosX + 1, arrayPosY, arrayPosZ)) && (stageScript.DumBesideDownDecision(arrayPosX + 1, arrayPosY, arrayPosZ)))
-                           {
-                               moveFlag = true;
-
-                               Debug.Log("break２");
-                           }
-
-                           break;
-                       case 2://Tweedleの角度90の時
-
-                           if ((stageScript.DumBesideDecision(arrayPosX - 1, arrayPosY, arrayPosZ)) && (stageScript.DumBesideDownDecision(arrayPosX - 1, arrayPosY, arrayPosZ)))
-                           {
-
-                               moveFlag = true;
-                           }
-                           break;
-                       default:
-                           break;
-                   }
-                   if (moveFlag == true)
-                   {
-                       break;
-                   }
-                   else
-                   {
-                       // 回転させる
-                       dumDirection++;
-
-                       //向きが一周したら最初の向きに戻す
-                       if (dumDirection == 5)
-                           dumDirection = 1;
-                   }
-
-               }
+               moveFlag = true;
            }
         }
 
-
+        //待機フラグを初期化
         notMoveTrun[timeCount] = 0;
 
         //カウントを戻す
@@ -293,7 +218,6 @@ public class TweedleDee :BaseGimmick
       
         //仮の保存座標に現在座標に入れる
         buttonInputPosition = this.transform.localPosition;
-
     }
 
     //-----------------
@@ -320,7 +244,7 @@ public class TweedleDee :BaseGimmick
                     transform.Translate(Vector3.forward * SPEED);
                     
                     //以下停止コード
-                    switch (dumDirection)
+                    switch (direction)
                     {
                         //Z軸を調整する
                         case 1:
@@ -382,7 +306,7 @@ public class TweedleDee :BaseGimmick
                     transform.Translate(Vector3.back * SPEED);
 
                     //以下停止コード
-                    switch (dumDirection)
+                    switch (direction)
                     {
                         //Z軸を調整する
                         case 1:
@@ -454,7 +378,7 @@ public class TweedleDee :BaseGimmick
         if(returnFlag == true)
         {
             //前回の向きの取得
-            dumDirection = beforeDirection[timeCount];
+            direction = beforeDirection[timeCount];
             
             //向きの変更
             ChangeDirection();
@@ -489,19 +413,19 @@ public class TweedleDee :BaseGimmick
     public void ChangeDirection()
     {
         //変数に応じて回転を代入する
-        if (dumDirection == 1)
+        if (direction == 1)
         {
             this.transform.localEulerAngles = enemyAngle1;
         }
-        if (dumDirection == 2)
+        if (direction == 2)
         {
             this.transform.localEulerAngles = enemyAngle2;
         }
-        if (dumDirection == 3)
+        if (direction == 3)
         {
             this.transform.localEulerAngles = enemyAngle3;
         }
-        if (dumDirection == 4)
+        if (direction == 4)
         {
             this.transform.localEulerAngles = enemyAngle4;
         }
