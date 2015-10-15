@@ -106,6 +106,9 @@
      <Compile Include="Assets\GameMain\Gimmick\CardSoldierHeart\HeartSoldierTurnLeft.cs" />
      <Compile Include="Assets\GameMain\Gimmick\CardSoldierHeart\HeartSoldierTurnRight.cs" />
      <Compile Include="Assets\GameMain\Gimmick\CardSoldierSpade\SpadeSoldier.cs" />
+     <Compile Include="Assets\GameMain\Gimmick\CardSoldierSpade\SpadeSoldierBackAndForth.cs" />
+     <Compile Include="Assets\GameMain\Gimmick\CardSoldierSpade\SpadeSoldierTurnLeft.cs" />
+     <Compile Include="Assets\GameMain\Gimmick\CardSoldierSpade\SpadeSoldierTurnRight.cs" />
      <Compile Include="Assets\GameMain\Gimmick\Cheshire\Cheshire.cs" />
      <Compile Include="Assets\GameMain\Gimmick\Door\Door.cs" />
      <Compile Include="Assets\GameMain\Gimmick\Flower\Flower1.cs" />
