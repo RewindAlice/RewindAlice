@@ -252,7 +252,6 @@
      <None Include="Assets\AllEffect\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\Blend.shader" />
      <None Include="Assets\AllEffect\Standard Assets\Effects\ImageEffects\Shaders\BlendModesOverlay.shader" />
      <None Include="Assets\Resources\error.txt" />
-     <None Include="Assets\GameMain\StageSelect\StageSelect.txt" />
      <None Include="Assets\GameMain\UI\Text\Character\stage1-5character.txt" />
      <None Include="Assets\AllEffect\Standard Assets\Effects\ImageEffects\Shaders\SimpleClear.shader" />
      <None Include="Assets\Resources\Text\StageTalk\stage4-1.txt" />

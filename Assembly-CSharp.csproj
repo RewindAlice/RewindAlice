@@ -103,6 +103,8 @@
      <Compile Include="Assets\Fade\Fade.cs" />
      <Compile Include="Assets\GameMain\Gimmick\Bramble\Bramble.cs" />
      <Compile Include="Assets\GameMain\Gimmick\CardSoldierHeart\HeartSoldier.cs" />
+     <Compile Include="Assets\GameMain\Gimmick\CardSoldierHeart\HeartSoldierTurnLeft.cs" />
+     <Compile Include="Assets\GameMain\Gimmick\CardSoldierHeart\HeartSoldierTurnRight.cs" />
      <Compile Include="Assets\GameMain\Gimmick\CardSoldierSpade\SpadeSoldier.cs" />
      <Compile Include="Assets\GameMain\Gimmick\Cheshire\Cheshire.cs" />
      <Compile Include="Assets\GameMain\Gimmick\Door\Door.cs" />
@@ -139,7 +141,8 @@
      <Compile Include="Assets\GameMain\Script\UI\StageNumberRight.cs" />
      <Compile Include="Assets\GameMain\Script\UI\TimerChange.cs" />
      <Compile Include="Assets\GameMain\Script\UI\WatchHandAnimation.cs" />
-     <Compile Include="Assets\Scene\StageSelect.cs" />
+     <Compile Include="Assets\Global\AspectCamera\AspectCamera.cs" />
+     <Compile Include="Assets\StageSelect\StageSelect.cs" />
      <Compile Include="Assets\StoryMain\Script\ChangeBackGround.cs" />
      <Compile Include="Assets\StoryMain\Script\ChangeCharacterImage.cs" />
      <Compile Include="Assets\StoryMain\Script\Fadeout.cs" />
@@ -355,7 +358,6 @@
      <None Include="Assets\AllEffect\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\Blend.shader" />
      <None Include="Assets\AllEffect\Standard Assets\Effects\ImageEffects\Shaders\BlendModesOverlay.shader" />
      <None Include="Assets\Resources\error.txt" />
-     <None Include="Assets\GameMain\StageSelect\StageSelect.txt" />
      <None Include="Assets\GameMain\UI\Text\Character\stage1-5character.txt" />
      <None Include="Assets\AllEffect\Standard Assets\Effects\ImageEffects\Shaders\SimpleClear.shader" />
      <None Include="Assets\Resources\Text\StageTalk\stage4-1.txt" />
