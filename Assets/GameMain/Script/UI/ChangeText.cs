@@ -31,6 +31,19 @@ public class ChangeText : MonoBehaviour {
     private int talkSpeed;
     private GameObject pause;
     private Pause pauseScript;
+
+    //読み込み改善用
+    //////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// 読み込んだテキストデータを格納するテキストアセット
+    /// </summary>
+    public TextAsset stageTextAsset;
+    /// <summary>
+    /// ステージの文字列データ
+    /// </summary>
+    public string stageData;
+    //////////////////////////////////////////////////////////////
+
     // 文字の表示が完了しているかどうか
     public bool IsCompleteDisplayText
     {
@@ -174,153 +187,153 @@ public class ChangeText : MonoBehaviour {
             {
                 limitTalk = 1;
                 talkNumber = 0;
-                filepath = "/GameMain/UI/Text/Talk/stage1-1talk.txt";
+                filepath = "UI/IntoGame/CharacterTalk/stage1-1talk";
             }
             else if (stageNumber == 112)
             {
                 limitTalk = 2;
                 talkNumber = 0;
-                filepath = "/GameMain/UI/Text/Talk/stage1-2talk.txt";
+                filepath = "UI/IntoGame/CharacterTalk/stage1-2talk";
             }
             else if (stageNumber == 113)
             {
                 limitTalk = 3;
                 talkNumber = 0;
-                filepath = "/GameMain/UI/Text/Talk/stage1-3talk.txt";
+                filepath = "UI/IntoGame/CharacterTalk/stage1-3talk";
             }
             else if (stageNumber == 114)
             {
                 limitTalk = 3;
                 talkNumber = 0;
-                filepath = "/GameMain/UI/Text/Talk/stage1-4talk.txt";
+                filepath = "UI/IntoGame/CharacterTalk/stage1-4talk";
             }
             else if (stageNumber == 115)
             {
                 limitTalk = 4;
                 talkNumber = 0;
-                filepath = "/GameMain/UI/Text/Talk/stage1-5talk.txt";
+                filepath = "UI/IntoGame/CharacterTalk/stage1-5talk";
             }
             else if (stageNumber == 121)
             {
                 limitTalk = 2;
                 talkNumber = 0;
-                filepath = "/GameMain/UI/Text/Talk/stage2-1talk.txt";
+                filepath = "UI/IntoGame/CharacterTalk/stage2-1talk";
             }
             else if (stageNumber == 122)
             {
                 limitTalk = 2;
                 talkNumber = 0;
-                filepath = "/GameMain/UI/Text/Talk/stage2-2talk.txt";
+                filepath = "UI/IntoGame/CharacterTalk/stage2-2talk";
             }
             else if (stageNumber == 123)
             {
                 limitTalk = 3;
                 talkNumber = 0;
-                filepath = "/GameMain/UI/Text/Talk/stage2-3talk.txt";
+                filepath = "UI/IntoGame/CharacterTalk/stage2-3talk";
             }
             else if (stageNumber == 124)
             {
                 limitTalk = 4;
                 talkNumber = 0;
-                filepath = "/GameMain/UI/Text/Talk/stage2-4talk.txt";
+                filepath = "UI/IntoGame/CharacterTalk/stage2-4talk";
             }
             else if (stageNumber == 125)
             {
                 limitTalk = 4;
                 talkNumber = 0;
-                filepath = "/GameMain/UI/Text/Talk/stage2-5talk.txt";
+                filepath = "UI/IntoGame/CharacterTalk/stage2-5talk";
             }
             else if (stageNumber == 131)
             {
                 limitTalk = 2;
                 talkNumber = 0;
-                filepath = "/GameMain/UI/Text/Talk/stage3-1talk.txt";
+                filepath = "UI/IntoGame/CharacterTalk/stage3-1talk";
             }
             else if (stageNumber == 132)
             {
                 limitTalk = 3;
                 talkNumber = 0;
-                filepath = "/GameMain/UI/Text/Talk/stage3-2talk.txt";
+                filepath = "UI/IntoGame/CharacterTalk/stage3-2talk";
             }
             else if (stageNumber == 133)
             {
                 limitTalk = 3;
                 talkNumber = 0;
-                filepath = "/GameMain/UI/Text/Talk/stage3-3talk.txt";
+                filepath = "UI/IntoGame/CharacterTalk/stage3-3talk";
             }
             else if (stageNumber == 134)
             {
                 limitTalk = 4;
                 talkNumber = 0;
-                filepath = "/GameMain/UI/Text/Talk/stage3-4talk.txt";
+                filepath = "UI/IntoGame/CharacterTalk/stage3-4talk";
             }
             else if (stageNumber == 135)
             {
                 limitTalk = 4;
                 talkNumber = 0;
-                filepath = "/GameMain/UI/Text/Talk/stage3-5talk.txt";
+                filepath = "UI/IntoGame/CharacterTalk/stage3-5talk";
             }
             else if (stageNumber == 141)
             {
                 limitTalk = 2;
                 talkNumber = 0;
-                filepath = "/GameMain/UI/Text/Talk/stage4-1talk.txt";
+                filepath = "UI/IntoGame/CharacterTalk/stage4-1talk";
             }
             else if (stageNumber == 142)
             {
                 limitTalk = 3;
                 talkNumber = 0;
-                filepath = "/GameMain/UI/Text/Talk/stage4-2talk.txt";
+                filepath = "UI/IntoGame/CharacterTalk/stage4-2talk";
             }
             else if (stageNumber == 143)
             {
                 limitTalk = 3;
                 talkNumber = 0;
-                filepath = "/GameMain/UI/Text/Talk/stage4-3talk.txt";
+                filepath = "UI/IntoGame/CharacterTalk/stage4-3talk";
             }
             else if (stageNumber == 144)
             {
                 limitTalk = 4;
                 talkNumber = 0;
-                filepath = "/GameMain/UI/Text/Talk/stage4-4talk.txt";
+                filepath = "UI/IntoGame/CharacterTalk/stage4-4talk";
             }
             else if (stageNumber == 145)
             {
                 limitTalk = 4;
                 talkNumber = 0;
-                filepath = "/GameMain/UI/Text/Talk/stage4-5talk.txt";
+                filepath = "UI/IntoGame/CharacterTalk/stage4-5talk";
             }
             else if (stageNumber == 151)
             {
                 limitTalk = 2;
                 talkNumber = 0;
-                filepath = "/GameMain/UI/Text/Talk/stage5-1talk.txt";
+                filepath = "UI/IntoGame/CharacterTalk/stage5-1talk";
             }
             else if (stageNumber == 152)
             {
                 limitTalk = 3;
                 talkNumber = 0;
-                filepath = "/GameMain/UI/Text/Talk/stage5-2talk.txt";
+                filepath = "UI/IntoGame/CharacterTalk/stage5-2talk"; 
             }
             else if (stageNumber == 153)
             {
                 limitTalk = 3;
                 talkNumber = 0;
-                filepath = "/GameMain/UI/Text/Talk/stage5-3talk.txt";
+                filepath = "UI/IntoGame/CharacterTalk/stage5-3talk";
             }
             else if (stageNumber == 154)
             {
 
                 limitTalk = 4;
                 talkNumber = 0;
-                filepath = "/GameMain/UI/Text/Talk/stage5-4talk.txt";
+                filepath = "UI/IntoGame/CharacterTalk/stage5-4talk";
             }
 
             if (stageNumber == 201)
             {
                 limitTalk = 6;
                 talkNumber = 0;
-                filepath = "/GameMain/UI/stage1-1talk.txt";
+                filepath = "UI/IntoGame/CharacterTalk/stage1-1talk";
             }
 
 
@@ -329,7 +342,8 @@ public class ChangeText : MonoBehaviour {
         
 
         talkSpeed = 600;
-        this.read();
+        ReadTextData();
+       //this.read();
 
         this.SetNextLine(lineCount);
         lineCount++;
@@ -381,5 +395,15 @@ public class ChangeText : MonoBehaviour {
         timeElapsed = Time.time;
         //currentLine++;
         lastUpdateCharacter = -1;
+    }
+
+        //.txtを読み込むときにreadの部分で差し換えてください
+    void ReadTextData()
+    {
+        // TextAssetとして、Resourcesフォルダからテキストデータをロードする
+        stageTextAsset = Resources.Load(filepath, typeof(TextAsset)) as TextAsset;
+        // 文字列を代入
+        stageData = stageTextAsset.text;
+        scenarios = stageData.Split("\n"[0]);
     }
 }
