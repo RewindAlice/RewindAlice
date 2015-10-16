@@ -101,8 +101,8 @@ public class StageSelect : MonoBehaviour
 		resetFlag = false;
 
 		count = 0;
-		drawFlag = false;
 		drawCount = 0;
+		drawFlag = false;
 
 		// ファイルが存在する
 		if (File.Exists("Assets/StageSelect/SaveData.txt")) { print("FILE"); }
