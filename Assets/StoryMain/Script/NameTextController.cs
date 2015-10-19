@@ -26,10 +26,18 @@ public class NameTextController : MonoBehaviour
     public string stageData;
     /// /////////////////////////////////////////////////////////////////////////
 
-
+    //メニュー作成
+    public bool stopText;
+    public bool funcFlag;
+    //タイマー
+    private int timer;
+    const int breakTime = 16;
 
     void Start()
     {
+
+        funcFlag = false;
+        stopText = false;
         CameraFade.StartAlphaFade(Color.black, true, 1.0f, 0.5f);
 
         int num = PlayerPrefs.GetInt("STORY_NUM");
@@ -111,14 +119,54 @@ public class NameTextController : MonoBehaviour
 
     void Update()
     {
-        //Debug.Log( flagManager.sentenceEndFlag );        
-        // 現在の行番号がラストまで行ってない状態でクリックすると、テキストを更新する
-        if (currentLine < scenarios.Length && flagManager.sentenceEndFlag == true && Input.GetMouseButtonDown(0))
+        //if (Input.GetKeyDown(KeyCode.Escape)&&(timer ==0))
+        //{
+        //    if (stopText == false)
+        //    {
+        //        stopText = true;
+        //    }
+        //    else
+        //    {
+        //        funcFlag = true;
+        //    }
+        //}
+        if (stopText == false)
         {
-            TextUpdate();
+            //Debug.Log( flagManager.sentenceEndFlag );        
+            // 現在の行番号がラストまで行ってない状態でクリックすると、テキストを更新する
+            if (currentLine < scenarios.Length && flagManager.sentenceEndFlag == true && Input.GetMouseButtonDown(0))
+            {
+                TextUpdate();
+            }
         }
+        else
+        {
+            if (Input.GetKey(KeyCode.Space))//Wへ変更予定
+            {
+                funcFlag = true;
+            }
+        }
+        //backGame();
     }
 
+
+    //void backGame()
+    //{
+    //    if (funcFlag)
+    //    {
+    //        //タイマーが必要な場合につけてください
+    //        if (timer > breakTime)
+    //        {
+    //            stopText = false;
+    //            funcFlag = false;
+    //            timer = 0;
+    //        }
+    //        else 
+    //        {
+    //            timer++;
+    //        }
+    //    }
+    //}
     // テキストを更新する
     void TextUpdate()
     {

@@ -19,10 +19,19 @@ public class TextController : MonoBehaviour
     private float timeElapsed = 1;
     private int currentLine = 0;
     private int lastUpdateCharacter = -1;
+    
 
     private FlagManager flagManager;
 
     private int test;
+
+    //メニュー作成
+    public bool stopText;
+    public bool funcFlag;
+    //タイマー
+    private int timer;
+    const int breakTime = 16;
+
 
     private string filepath;
 
@@ -63,7 +72,9 @@ public class TextController : MonoBehaviour
     {
         stageNum = PlayerPrefs.GetInt ("STORY_NUM");
         crickNum = 0;
-
+        funcFlag = false;
+        stopText = false;
+        timer = 0;
 
         seManager = SE.GetComponent<SEManager>();
         leftCharacterImage = LeftCharacter.GetComponent<ChangeCharacterImage>();
@@ -145,105 +156,143 @@ public class TextController : MonoBehaviour
 
     void Update()
     {
-
-        //Debug.Log( flagManager.sentenceEndFlag );        
-        // 文字の表示が完了してるならクリック時に次の行を表示する
-        if (IsCompleteDisplayText)
+        //if (Input.GetKeyDown(KeyCode.Escape) && (timer == 0))
+        //{
+        //    if(stopText == false)
+        //    {
+        //        stopText = true;
+        //    }
+        //    else
+        //    {
+        //        funcFlag = true;
+        //    }
+        //}
+        if (stopText == false)
         {
-
-            flagManager.sentenceEndFlag = true;
-            //Debug.Log("hoge");
-            //Debug.Log( flagManager.sentenceEndFlag );  
-            if ((currentLine < scenarios.Length && Input.GetMouseButtonDown(0)) ||
-                (Input.GetKeyDown(KeyCode.Joystick1Button0)) ||
-                (Input.GetKeyDown(KeyCode.Joystick1Button1)) ||
-                (Input.GetKeyDown(KeyCode.Joystick1Button2)) ||
-                (Input.GetKeyDown(KeyCode.Joystick1Button3)))
+            //Debug.Log( flagManager.sentenceEndFlag );        
+            // 文字の表示が完了してるならクリック時に次の行を表示する
+            if (IsCompleteDisplayText)
             {
-                seManager.SEStop();
-                SetNextLine();
-                crickNum++;
-                flagManager.clickCounter++;
-                leftCharacterImage.CharacterChange();
-                rightCharacterImage.CharacterChange();
-                seManager.SEChanger(stageNum, crickNum);
+
+                flagManager.sentenceEndFlag = true;
+                //Debug.Log("hoge");
+                //Debug.Log( flagManager.sentenceEndFlag );  
+                if ((currentLine < scenarios.Length && Input.GetMouseButtonDown(0)) ||
+                    (Input.GetKeyDown(KeyCode.Joystick1Button0)) ||
+                    (Input.GetKeyDown(KeyCode.Joystick1Button1)) ||
+                    (Input.GetKeyDown(KeyCode.Joystick1Button2)) ||
+                    (Input.GetKeyDown(KeyCode.Joystick1Button3)))
+                {
+                    seManager.SEStop();
+                    SetNextLine();
+                    crickNum++;
+                    flagManager.clickCounter++;
+                    leftCharacterImage.CharacterChange();
+                    rightCharacterImage.CharacterChange();
+                    seManager.SEChanger(stageNum, crickNum);
+                }
+            }
+            else
+            {
+                // 完了してないなら文字をすべて表示する
+                if (Input.GetMouseButtonDown(0))
+                {
+                    timeUntilDisplay = 0;
+                }
+                flagManager.sentenceEndFlag = false;
+            }
+
+            int displayCharacterCount = (int)(Mathf.Clamp01((Time.time - timeElapsed) / timeUntilDisplay) * currentText.Length);
+            if (displayCharacterCount != lastUpdateCharacter)
+            {
+                uiText.text = currentText.Substring(0, displayCharacterCount);
+                lastUpdateCharacter = displayCharacterCount;
+            }
+
+            if (stageNum == 11 && crickNum == 19)
+            {
+                PlayerPrefs.SetInt("STAMP_NUM", 1);
+                Application.LoadLevel("StageSelectScene");
+            }
+            else if (stageNum == 12 && crickNum == 8)
+            {
+                PlayerPrefs.SetInt("STAMP_NUM", 7);
+                Application.LoadLevel("StageSelectScene");
+            }
+            else if (stageNum == 21 && crickNum == 18)
+            {
+                PlayerPrefs.SetInt("STAMP_NUM", 8);
+                Application.LoadLevel("StageSelectScene");
+            }
+            else if (stageNum == 22 && crickNum == 6)
+            {
+                PlayerPrefs.SetInt("STAMP_NUM", 14);
+                Application.LoadLevel("StageSelectScene");
+            }
+            else if (stageNum == 31 && crickNum == 13)
+            {
+                PlayerPrefs.SetInt("STAMP_NUM", 15);
+                Application.LoadLevel("StageSelectScene");
+            }
+            else if (stageNum == 32 && crickNum == 16)
+            {
+                PlayerPrefs.SetInt("STAMP_NUM", 21);
+                Application.LoadLevel("StageSelectScene");
+            }
+            else if (stageNum == 41 && crickNum == 6)
+            {
+                PlayerPrefs.SetInt("STAMP_NUM", 22);
+                Application.LoadLevel("StageSelectScene");
+            }
+            else if (stageNum == 42 && crickNum == 18)
+            {
+                PlayerPrefs.SetInt("STAMP_NUM", 28);
+                Application.LoadLevel("StageSelectScene");
+            }
+            else if (stageNum == 51 && crickNum == 8)
+            {
+                PlayerPrefs.SetInt("STAMP_NUM", 29);
+                Application.LoadLevel("StageSelectScene");
+            }
+            else if (stageNum == 52 && crickNum == 23)
+            {
+                PlayerPrefs.SetInt("STAMP_NUM", 34);
+                Application.LoadLevel("EndingScene");
+            }
+            else if (stageNum == 53 && crickNum == 34)
+            {
+                PlayerPrefs.SetInt("STAMP_NUM", 35);
+                Application.LoadLevel("StageSelectScene");
             }
         }
         else
         {
-            // 完了してないなら文字をすべて表示する
-            if (Input.GetMouseButtonDown(0))
-            {
-                timeUntilDisplay = 0;
-            }
-            flagManager.sentenceEndFlag = false;
-        }
+            //if(Input.GetKey(KeyCode.Space))//Wへ変更予定
+            //{
+            //    funcFlag = true;
+            //}
 
-        int displayCharacterCount = (int)(Mathf.Clamp01((Time.time - timeElapsed) / timeUntilDisplay) * currentText.Length);
-        if (displayCharacterCount != lastUpdateCharacter)
-        {
-            uiText.text = currentText.Substring(0, displayCharacterCount);
-            lastUpdateCharacter = displayCharacterCount;
         }
-
-        if (stageNum == 11 && crickNum == 19)
-        {
-            PlayerPrefs.SetInt("STAMP_NUM", 1);
-            Application.LoadLevel("StageSelectScene");
-        }
-        else if (stageNum == 12 && crickNum == 8)
-        {
-            PlayerPrefs.SetInt("STAMP_NUM", 7);
-            Application.LoadLevel("StageSelectScene");
-        }
-        else if (stageNum == 21 && crickNum == 18)
-        {
-            PlayerPrefs.SetInt("STAMP_NUM", 8);
-            Application.LoadLevel("StageSelectScene");
-        }
-        else if (stageNum == 22 && crickNum == 6)
-        {
-            PlayerPrefs.SetInt("STAMP_NUM", 14);
-            Application.LoadLevel("StageSelectScene");
-        }
-        else if (stageNum == 31 && crickNum == 13)
-        {
-            PlayerPrefs.SetInt("STAMP_NUM", 15);
-            Application.LoadLevel("StageSelectScene");
-        }
-        else if (stageNum == 32 && crickNum == 16)
-        {
-            PlayerPrefs.SetInt("STAMP_NUM", 21);
-            Application.LoadLevel("StageSelectScene");
-        }
-        else if (stageNum == 41 && crickNum == 6)
-        {
-            PlayerPrefs.SetInt("STAMP_NUM", 22);
-            Application.LoadLevel("StageSelectScene");
-        }
-        else if (stageNum == 42 && crickNum == 18)
-        {
-            PlayerPrefs.SetInt("STAMP_NUM", 28);
-            Application.LoadLevel("StageSelectScene");
-        }
-        else if (stageNum == 51 && crickNum == 8)
-        {
-            PlayerPrefs.SetInt("STAMP_NUM", 29);
-            Application.LoadLevel("StageSelectScene");
-        }
-        else if (stageNum == 52 && crickNum == 23)
-        {
-            PlayerPrefs.SetInt("STAMP_NUM", 34);
-            Application.LoadLevel("EndingScene");
-        }
-        else if (stageNum == 53 && crickNum == 34)
-        {
-            PlayerPrefs.SetInt("STAMP_NUM", 35);
-            Application.LoadLevel("StageSelectScene");
-        }
+        //backGame();
     }
-
-
+    //void backGame()
+    //{
+    //    if(funcFlag)
+    //    {
+    //        //タイマーが必要な場合につけてください
+    //        if (timer > breakTime)
+    //        {
+    //            stopText = false;
+    //            funcFlag = false;
+    //            timer = 0;
+    //        }
+    //        else
+    //        {
+    //           timer++;
+    //        }
+    //    }
+    //}
+    
     void SetNextLine()
     {
         currentText = scenarios[currentLine];
