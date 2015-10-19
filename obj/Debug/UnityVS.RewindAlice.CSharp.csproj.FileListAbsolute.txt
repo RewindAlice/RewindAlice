@@ -11,3 +11,16 @@ C:\Users\s132170\Desktop\RewindAlice\Temp\UnityVS_bin\Debug\UnityEditor.iOS.Exte
 C:\Users\s132170\Desktop\RewindAlice\obj\Debug\UnityVS.RewindAlice.CSharp.csprojResolveAssemblyReference.cache
 C:\Users\s132170\Desktop\RewindAlice\obj\Debug\Assembly-CSharp.dll
 C:\Users\s132170\Desktop\RewindAlice\obj\Debug\Assembly-CSharp.pdb
+C:\Users\s132050\Documents\RewindAlice\Temp\UnityVS_bin\Debug\Assembly-CSharp.dll
+C:\Users\s132050\Documents\RewindAlice\Temp\UnityVS_bin\Debug\Assembly-CSharp.pdb
+C:\Users\s132050\Documents\RewindAlice\Temp\UnityVS_bin\Debug\UnityEditor.dll
+C:\Users\s132050\Documents\RewindAlice\Temp\UnityVS_bin\Debug\UnityEditor.iOS.Extensions.Xcode.dll
+C:\Users\s132050\Documents\RewindAlice\Temp\UnityVS_bin\Debug\UnityEngine.dll
+C:\Users\s132050\Documents\RewindAlice\Temp\UnityVS_bin\Debug\UnityEngine.UI.dll
+C:\Users\s132050\Documents\RewindAlice\Temp\UnityVS_bin\Debug\UnityEngine.xml
+C:\Users\s132050\Documents\RewindAlice\Temp\UnityVS_bin\Debug\UnityEditor.xml
+C:\Users\s132050\Documents\RewindAlice\Temp\UnityVS_bin\Debug\UnityEngine.UI.xml
+C:\Users\s132050\Documents\RewindAlice\Temp\UnityVS_bin\Debug\UnityEditor.iOS.Extensions.Xcode.xml
+C:\Users\s132050\Documents\RewindAlice\obj\Debug\UnityVS.RewindAlice.CSharp.csprojResolveAssemblyReference.cache
+C:\Users\s132050\Documents\RewindAlice\obj\Debug\Assembly-CSharp.dll
+C:\Users\s132050\Documents\RewindAlice\obj\Debug\Assembly-CSharp.pdb
