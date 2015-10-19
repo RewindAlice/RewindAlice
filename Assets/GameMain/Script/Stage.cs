@@ -729,15 +729,18 @@ public class Stage : MonoBehaviour
             // トランプ兵（その場監視）
             case SOLDIER_HEART:
                 stageObject[y, x, z] = GameObject.Instantiate(soldierHeart, new Vector3(x, y - 0.5f, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].GetComponent<HeartSoldier>().Initialize(1, x, y, z);
                 break;
             // トランプ兵（巡回１）
             case SOLDIER_SPADE1:
                 stageObject[y, x, z] = GameObject.Instantiate(soldierSpade, new Vector3(x, y - 0.5f, z), Quaternion.identity) as GameObject;
+                stageObject[y, x, z].GetComponent<SpadeSoldier>().Initialize(1, x, y, z);
+               
                 break;
             // トランプ兵（巡回２）
             case SOLDIER_SPADE2:
                 stageObject[y, x, z] = GameObject.Instantiate(soldierSpade, new Vector3(x, y - 0.5f, z), Quaternion.identity) as GameObject;
-                stageObject[y, x, z].GetComponent<SpadeSoldier>().SetPat();
+                //stageObject[y, x, z].GetComponent<SpadeSoldier>().SetPat();
                 break;
             // 双子（左）
             case TWINS_LEFT_FRONT:
@@ -941,13 +944,13 @@ public class Stage : MonoBehaviour
                 // １段目
                 {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
                 {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
-                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
-                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
-                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0, 11,  0, 11,  0, 11,  0,  0,  0},
+                {  0,  0,  0,  0, 11,  0, 11,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0, 11, 11, 11,  0,  0,  0},
                 {  0,  0,  0, 11, 11, 11, 11, 11,  0,  0,  0},
-                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
-                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
-                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  0, 11, 11, 11,  0,  0,  0},
+                {  0,  0,  0,  0, 11,  0, 11,  0,  0,  0,  0},
+                {  0,  0,  0, 11,  0, 11,  0, 11,  0,  0,  0},
                 {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
                 {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
             },
@@ -3307,14 +3310,14 @@ public class Stage : MonoBehaviour
             {
                 // ２段目
                 {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
-                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
-                {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
-                {  0,  0,  0, 11, 11,  0,  0,  0,  0,  0,  0},
-                {  0,  -1, 0,113, 11,  0,  0,  0,  0,  0,  0},
                 {  0,  0,  0, 11,  0,  0,  0,  0,  0,  0,  0},
                 {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0, 11, 11, 11, 11,  0,  0,  0,  0},
+                {  0,  -1, 0,  0,  0, 0,   0,  0,  0,  0,  0},
+                {  0,  0,  0,  0,  SOLDIER_HEART,  0, 11,  0,  0,  0,  0},
                 {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
                 {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
+                {  0,  0,  0, 11,  0,  0,  0,  0,  0,  0,  0},
                 {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
                 {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
             },
@@ -3420,7 +3423,11 @@ public class Stage : MonoBehaviour
     // ステージのギミックを設定///
     public void Stage1Gimmick()
     {
-        //stageObject[1, 9, 8].GetComponent<Tree>().SetStartActionTurn(2);
+        //stageObject[1, 7, 3].GetComponent<Tree>().SetStartActionTurn(0);
+        //stageObject[1, 7, 4].GetComponent<Tree>().SetStartActionTurn(4);
+        //stageObject[1, 7, 5].GetComponent<Tree>().SetStartActionTurn(3);
+        //stageObject[1, 7, 6].GetComponent<Tree>().SetStartActionTurn(2);
+        //stageObject[1, 7, 7].GetComponent<Tree>().SetStartActionTurn(1);
     }
     public void Stage2Gimmick()
     {
@@ -3535,32 +3542,32 @@ public class Stage : MonoBehaviour
     }
     public void Stage21Gimmick()
     {
-        stageObject[1, 6, 7].GetComponent<SpadeSoldier>().SetData(4, 2, true, 1, 6, 7);
+        //stageObject[1, 6, 7].GetComponent<SpadeSoldier>().SetData(4, 2, true, 1, 6, 7);
 
-        stageObject[1, 4, 4].GetComponent<HeartSoldier>().SetData(4, 1, 4, 4);
+        //stageObject[1, 4, 4].GetComponent<HeartSoldier>().SetData(4, 1, 4, 4);
     }
     public void Stage22Gimmick()
     {
-        stageObject[1, 6, 8].GetComponent<SpadeSoldier>().SetData(3, 2, true, 1, 6, 8);
+        //stageObject[1, 6, 8].GetComponent<SpadeSoldier>().SetData(3, 2, true, 1, 6, 8);
 
-        stageObject[1, 3, 5].GetComponent<HeartSoldier>().SetData(3, 1, 3, 5);
+        //stageObject[1, 3, 5].GetComponent<HeartSoldier>().SetData(3, 1, 3, 5);
     }
     public void Stage23Gimmick()
     {
-        stageObject[1, 6, 7].GetComponent<SpadeSoldier>().SetData(3, 2, true, 1, 6, 7);
-        stageObject[1, 4, 5].GetComponent<SpadeSoldier>().SetData(1, 2, true, 1, 4, 5);
+        //stageObject[1, 6, 7].GetComponent<SpadeSoldier>().SetData(3, 2, true, 1, 6, 7);
+        //stageObject[1, 4, 5].GetComponent<SpadeSoldier>().SetData(1, 2, true, 1, 4, 5);
 
-        stageObject[1, 4, 3].GetComponent<HeartSoldier>().SetData(4, 1, 4, 3);
-        stageObject[1, 6, 3].GetComponent<HeartSoldier>().SetData(2, 1, 6, 3);
+        //stageObject[1, 4, 3].GetComponent<HeartSoldier>().SetData(4, 1, 4, 3);
+        //stageObject[1, 6, 3].GetComponent<HeartSoldier>().SetData(2, 1, 6, 3);
 
     }
     public void Stage24Gimmick()
     {
-        stageObject[1, 6, 3].GetComponent<SpadeSoldier>().SetData(1, 4, false, 1, 6, 3);
-        stageObject[1, 5, 7].GetComponent<SpadeSoldier>().SetData(3, 4, false, 1, 5, 7);
+        //stageObject[1, 6, 3].GetComponent<SpadeSoldier>().SetData(1, 4, false, 1, 6, 3);
+        //stageObject[1, 5, 7].GetComponent<SpadeSoldier>().SetData(3, 4, false, 1, 5, 7);
 
-        stageObject[2, 2, 4].GetComponent<HeartSoldier>().SetData(4, 2, 2, 4);
-        stageObject[2, 4, 6].GetComponent<HeartSoldier>().SetData(2, 2, 4, 6);
+        //stageObject[2, 2, 4].GetComponent<HeartSoldier>().SetData(4, 2, 2, 4);
+        //stageObject[2, 4, 6].GetComponent<HeartSoldier>().SetData(2, 2, 4, 6);
 
 
         stageObject[1, 7, 7].GetComponent<Ivy>().SetStartActionTurn(30);
@@ -4975,9 +4982,9 @@ public class Stage : MonoBehaviour
     public bool DumBesideDownDecision(int posX, int posY, int posZ)
     {
         bool flag = false;
-        Debug.Log(posX);
-        Debug.Log(posY);
-        Debug.Log(posZ);
+        //Debug.Log(posX);
+        //Debug.Log(posY);
+        //Debug.Log(posZ);
         switch (stage[posY - 1, posX, posZ])
         {
             case BLOCK:             // ブロック

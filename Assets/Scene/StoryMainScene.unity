@@ -1608,6 +1608,7 @@ GameObject:
   - 92: {fileID: 2092364014}
   - 124: {fileID: 2092364013}
   - 81: {fileID: 2092364012}
+  - 114: {fileID: 2092364017}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1648,9 +1649,9 @@ Camera:
   m_BackGroundColor: {r: .192156866, g: .301960796, b: .474509805, a: .0196078438}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0
+    x: .0245233774
     y: 0
-    width: 1
+    width: .950953245
     height: 1
   near clip plane: .300000012
   far clip plane: 1000
@@ -1680,3 +1681,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
+--- !u!114 &2092364017
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2092364011}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38bc12deadd92084e8d946ed7304a4eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  aspect: {x: 16, y: 9}
+  backgroundColor:
+    serializedVersion: 2
+    rgba: 4278190080

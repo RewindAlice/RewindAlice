@@ -134,40 +134,44 @@ public class HeartSoldierTurnLeft : BaseGimmick
         //アリスの位置を取得
         Vector3 playerArray = moveScript.GetArray();
 
-        //アリスが前にいるか判定
-        switch (direction)
+        if (moveScript.GetInvisible() == false)
         {
-            case 1:
-                if ((playerArray.x == arrayPosX) && (playerArray.y == arrayPosY) && (playerArray.z == arrayPosZ + 1))
-                {
-                    moveScript.gameOverFlag = true;
-                    return true;
-                }
-                break;
-            case 2:
-                if ((playerArray.x == arrayPosX + 1) && (playerArray.y == arrayPosY) && (playerArray.z == arrayPosZ))
-                {
-                    moveScript.gameOverFlag = true;
-                    return true;
-                }
-                break;
+            //アリスが前にいるか判定
+            switch (direction)
+            {
+                case 1:
+                    if ((playerArray.x == arrayPosX) && (playerArray.y == arrayPosY) && (playerArray.z == arrayPosZ + 1))
+                    {
+                        moveScript.gameOverFlag = true;
+                        return true;
+                    }
+                    break;
+                case 2:
+                    if ((playerArray.x == arrayPosX + 1) && (playerArray.y == arrayPosY) && (playerArray.z == arrayPosZ))
+                    {
+                        moveScript.gameOverFlag = true;
+                        return true;
+                    }
+                    break;
 
-            case 3:
-                if ((playerArray.x == arrayPosX) && (playerArray.y == arrayPosY) && (playerArray.z == arrayPosZ - 1))
-                {
-                    moveScript.gameOverFlag = true;
-                    return true;
-                }
-                break;
+                case 3:
+                    if ((playerArray.x == arrayPosX) && (playerArray.y == arrayPosY) && (playerArray.z == arrayPosZ - 1))
+                    {
+                        moveScript.gameOverFlag = true;
+                        return true;
+                    }
+                    break;
 
-            case 4:
-                if ((playerArray.x == arrayPosX - 1) && (playerArray.y == arrayPosY) && (playerArray.z == arrayPosZ))
-                {
-                    moveScript.gameOverFlag = true;
-                    return true;
-                }
-                break;
+                case 4:
+                    if ((playerArray.x == arrayPosX - 1) && (playerArray.y == arrayPosY) && (playerArray.z == arrayPosZ))
+                    {
+                        moveScript.gameOverFlag = true;
+                        return true;
+                    }
+                    break;
+            }
         }
+
         return false;
     }
 

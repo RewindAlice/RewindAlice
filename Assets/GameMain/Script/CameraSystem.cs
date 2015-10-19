@@ -33,6 +33,20 @@ public class CameraSystem : MonoBehaviour
     Vector3 offset;                     // カメラと対象の距離
     Turn turn;                          // カメラの回転方向
 
+    public GameObject camera;
+
+    public Camera mapCamera;
+
+    public bool clearFlag;
+    public int clearY;
+    public int clearTY;
+
+    public float cameraXZ;
+    public float cameraY;
+    public int time;
+
+    public float cameraRX;
+
     // 左回転時の方向設定
     void RotationLeft()
     {
@@ -79,14 +93,22 @@ public class CameraSystem : MonoBehaviour
         offset = transform.position - alice.transform.position;     // 追従対象との距離の初期化
         turn = Turn.LEFT;
         flag = false;
+
+        clearFlag = false;
+        clearY = 0;
+        clearTY = 0;
+
+        camera = GameObject.Find("Main Camera");
+
+        cameraXZ = -4;
+        cameraY = 2;
+        time = 0;
+        cameraRX = 15;
 	}
 	
 	// 更新
 	void Update () 
 	{
-        // カメラをプレイヤーに追従させる
-        transform.position = new Vector3(alice.transform.position.x + offset.x, alice.transform.position.y + offset.y, alice.transform.position.z + offset.z);
-        
         // 回転する
 		if (flag == true) 
 		{
@@ -106,7 +128,7 @@ public class CameraSystem : MonoBehaviour
                     if (currentRotationY != targetRotationY)
                     {
                         currentRotationY++;
-
+                        mapCamera.transform.Rotate(0, 0, -1);
                         if (currentRotationY == 360)
                         {
                             currentRotationY = 0;
@@ -133,18 +155,184 @@ public class CameraSystem : MonoBehaviour
                         }
 
                         currentRotationY--;
+
+                        mapCamera.transform.Rotate(0, 0, 1);
                     }
                     break;
             }
+
+            
 		}
 
-        transform.eulerAngles = new Vector3(0, currentRotationY, 0);    // カメラの角度に現在の角度を設定
+
+        if (clearFlag == false)
+        {
+            // カメラをプレイヤーに追従させる
+            transform.position = new Vector3(alice.transform.position.x + offset.x, alice.transform.position.y + offset.y, alice.transform.position.z + offset.z);
+
+            clearY = (int)transform.eulerAngles.y;
+            clearTY = clearY;
+            transform.eulerAngles = new Vector3(0, currentRotationY, 0);    // カメラの角度に現在の角度を設定
+        }
 
         // 目標の角度に到達したら
         if (currentRotationY == targetRotationY)
         {
             flag = false;
         }
+
+        //クリアしたら
+        if (clearFlag == true)
+        {
+
+            //アリスの向きを取得
+            //int direction = alice.GetDirection();
+            
+            //アリスの向きによって回転させる
+            //switch(direction)
+            //{
+            //    case 1:
+            //        if (clearY < 136 || clearY > 314)
+            //        {
+            //            if (clearTY != 135)
+            //            {
+            //                clearTY += 2;
+            //            }
+
+            //            if (clearTY == 360)
+            //            {
+            //                clearTY = 1;
+            //            }
+            //        }
+            //        else
+            //        {
+            //            if (clearTY != 135)
+            //            {
+            //                clearTY -= 2;
+            //            }
+
+            //            if (clearTY == 0)
+            //            {
+            //                clearTY = 359;
+            //            }
+            //        }
+
+
+            //        break;
+            //    case 2:
+
+            //        if (clearY < 45 || clearY > 224)
+            //        {
+            //            if (clearTY != 225)
+            //            {
+            //                clearTY -= 2;
+            //            }
+
+            //            if (clearTY == 0)
+            //            {
+            //                clearTY = 359;
+            //            }
+            //        }
+            //        else
+            //        {
+            //            if (clearTY != 225)
+            //            {
+            //                clearTY += 2;
+            //            }
+
+            //            if (clearTY == 360)
+            //            {
+            //                clearTY = 1;
+            //            }
+            //        }
+            //        break;
+            //    case 3:
+            //        if (clearY < 136 || clearY > 314)
+            //        {
+            //            if (clearTY != 315)
+            //            {
+            //                clearTY -= 2;
+            //            }
+
+            //            if (clearTY == 0)
+            //            {
+            //                clearTY = 359;
+            //            }
+            //        }
+            //        else
+            //        {
+            //            if (clearTY != 315)
+            //            {
+            //                clearTY += 2;
+            //            }
+
+            //            if (clearTY == 360)
+            //            {
+            //                clearTY = 1;
+            //            }
+            //        }
+            //        break;
+            //    case 4:
+            //        if (clearY < 45 || clearY > 224)
+            //        {
+            //            if (clearTY != 45)
+            //            {
+            //                clearTY += 2;
+            //            }
+
+            //            if (clearTY == 360)
+            //            {
+            //                clearTY = 1;
+            //            }
+            //        }
+            //        else
+            //        {
+            //            if (clearTY != 45)
+            //            {
+            //                clearTY -= 2;
+            //            }
+
+            //            if (clearTY == 0)
+            //            {
+            //                clearTY = 359;
+            //            }
+            //        }
+            //        break;
+            //}
+          
+            //カメラを近づける
+            if(time < 60)
+            {
+                cameraXZ += 0.05f;
+
+                cameraRX -= 0.25f;
+
+                if(time<50)
+                {
+                    cameraY -= 0.025f;
+                }
+                else
+                {
+                    cameraY -= 0.035f;
+                }
+                time++;
+                
+            }
+            
+
+            transform.eulerAngles = new Vector3(0, clearTY, 0);    // カメラの角度に現在の角度を設定
+            
+
+            //ズーム
+            camera.transform.localPosition = new Vector3(cameraXZ, cameraY, cameraXZ);     // 座標を変更
+            camera.transform.localEulerAngles = new Vector3(cameraRX, 45.0f, 0.0f);
+
+
+        }
+
+        
+
+       
 	}
 
     // 左回転

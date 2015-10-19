@@ -1617,4 +1617,12 @@ public class Player : MonoBehaviour
     {
         return new Vector3(arrayPosX, arrayPosY, arrayPosZ);
     }
+
+    //-------------------
+    //アリスが透明か返す
+    //-------------------
+    public bool GetInvisible()
+    {
+        return invisibleFlag;
+    }
 }

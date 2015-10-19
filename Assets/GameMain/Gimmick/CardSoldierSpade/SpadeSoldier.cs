@@ -1,37 +1,43 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class SpadeSoldier : BaseGimmick {
+public class SpadeSoldier : BaseGimmick
+{
 
     const float MOVE_SPEED = 1.0f;    // 移動速度
-    const float SPEED = 0.05f;    // 移動速度
+    const float SPEED = 0.05f;        // 移動速度
 
-    public bool modePatrol;
-    public int modeRun;
-    public int runNumber; //ステージの端っこについたら
-   
-    public bool startFlag;
-
-    public bool moveing;
+    //移動可能フラグ
+    public bool moveFlag;
+    //ターンが戻ったか
     public bool returnFlag;
 
-    //アリスの情報を仕入れる
+    //オブジェクト
     public GameObject alice;
     private Player moveScript;
-    //public GameObject stage;
-    //private Stage stageScript;
+    public GameObject stage;
+    private Stage stageScript;
+    private GameObject pause;
+    private Pause pauseScript;
+
     //追加
-    public int soldierDirection;
+    public int direction;
     //トランプ兵の歩数計算
     public int timeCount;
 
+    //回転の初期値
     Vector3 enemyAngle1;
     Vector3 enemyAngle2;
     Vector3 enemyAngle3;
     Vector3 enemyAngle4;
 
+    //過去の向きを保存
+    public int[] beforeDirection;
+    //動いてないターン保存
+    public int[] notMoveTrun;
+    //回転しただけのターン保存
+    public int[] TrunTime;
 
-    bool EndFlag;
     public enum ArrayMove
     {
         PLUS_X,     // X方向にプラス
@@ -42,900 +48,418 @@ public class SpadeSoldier : BaseGimmick {
         MINUS_Z,    // Z方向にマイナス
     }
 
-    public int arrayPosX;                           // 配列上での座標Ｘ
-    public int arrayPosY;                           // 配列上での座標Ｙ
-    public int arrayPosZ;                           // 配列上での座標Ｚ
+    public int arrayPosX;                // 配列上での座標Ｘ
+    public int arrayPosY;                // 配列上での座標Ｙ
+    public int arrayPosZ;                // 配列上での座標Ｚ
 
     public Vector3 buttonInputPosition;  // ボタン入力時の座標
 
-
-    //追加(黒い人)
-    public int backDirection;//１個前を保存する
-    //回転して進んだ時の建てます
-    public bool rotFlag1;
-    public bool rotFlag2;
-    public bool rotFlag3;
-    public bool rotFlag4;
-    //規定ルートを周回した数
-    public int rotRoopCount;
-    //定数
-    const int SQUARE = 4;
-
-
-    //四角の１辺の長さ(ここをかえるとトランプ兵の場所を変えることができます)
-    public int one_Side;
-
-
-
-    private GameObject pause;
-    private Pause pauseScript;
-    // Use this for initialization
+    //------------------------
+    //初期化関数
+    //------------------------
     void Start()
     {
+        //オブジェクトの検索
         pause = GameObject.Find("Pause");
-        alice = GameObject.Find("Alice");
         pauseScript = pause.GetComponent<Pause>();
+        alice = GameObject.Find("Alice");
         moveScript = alice.GetComponent<Player>();
+        stage = GameObject.Find("Stage");
+        stageScript = stage.GetComponent<Stage>();
+
         //トランプ兵の回転処理
         enemyAngle1 = new Vector3(0, 0, 0);
         enemyAngle2 = new Vector3(0, 90, 0);
         enemyAngle3 = new Vector3(0, 180, 0);
         enemyAngle4 = new Vector3(0, 270, 0);
 
-        startFlag = false;
-        EndFlag = false;
+        //ボタン入力時のオブジェクトの位置
         buttonInputPosition = new Vector3(0, 0, 0);
-        
-        //移動制御
-        soldierDirection = 1;
 
+        //経過したターン数
         timeCount = 0;
-        //moveScript = alice.GetComponent<Player>();
 
-        arrayPosX = 0;
-        arrayPosY = 0;
-        arrayPosZ = 0;
-
+        //動けるかどうか
+        moveFlag = false;
+        //時を戻したときの挙動かどうか
         returnFlag = false;
-        moveing = false;
-        //追加(黒人(偽))
-        backDirection = 1;
-        //方向を変えて移動したときに保存する
-        rotFlag1 = false;
-        rotFlag2 = false;
-        rotFlag3 = false;
-        rotFlag4 = false;
 
-        //１つの辺あたりの長さを決める
-        one_Side = 2;
+        //過去の向きの保存用変数の初期化
+        beforeDirection = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+        notMoveTrun = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 
-        //runNumber = 4;
-        modePatrol = false;
-        //modeRun = 1;
-       
-        if(modeRun == 1)
-        {
-            this.transform.localEulerAngles = enemyAngle1;
-            soldierDirection = 1;
-        }
-        else if (modeRun == 2)
-        {
-            this.transform.localEulerAngles = enemyAngle2;
-            soldierDirection = 2;
-        }
-        else if (modeRun == 3)
-        {
-            this.transform.localEulerAngles = enemyAngle3;
-            soldierDirection = 3;
-        }
-        else if (modeRun == 4)
-        {
-            this.transform.localEulerAngles = enemyAngle4;
-            soldierDirection = 4;
-        }
-	}
+        TrunTime = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-
-    public void SetData(int Direction,int sideNumber,bool pat,int PosY,int PosX, int PosZ)
-    {
-        if (Direction == 1)
-        {
-            this.transform.localEulerAngles = enemyAngle1;
-            soldierDirection = 1;
-            backDirection =1;
-            modeRun = 1;
-        }
-        else if (Direction == 2)
-        {
-            this.transform.localEulerAngles = enemyAngle2;
-            soldierDirection = 2;
-            backDirection =2;
-            modeRun = 2;
-        }
-        else if (Direction == 3)
-        {
-            this.transform.localEulerAngles = enemyAngle3;
-            soldierDirection = 3;
-            backDirection =3;
-            modeRun = 3;
-        }
-        else if (Direction == 4)
-        {
-            this.transform.localEulerAngles = enemyAngle4;
-            soldierDirection = 4;
-            backDirection =4;
-            modeRun = 4;
-        }
-
-        one_Side = sideNumber;
-        modePatrol = pat;
-
-        arrayPosX = PosX;
-        arrayPosY = PosY;
-        arrayPosZ = PosZ;
+        //初期の向きを代入
+        beforeDirection[0] = direction;
+        ChangeDirection();
     }
 
+
+    //-----------------
+    //アップデート関数
+    //-----------------
+    void Update()
+    {
+        //動かす
+        Move();
+    }
+
+    //------------------------
+    //座標・向きの初期化関数
+    //------------------------
+    public void Initialize(int direction, int x, int y, int z)
+    {
+        //向きの初期化
+        this.direction = direction;
+
+        //座標の初期化
+        arrayPosX = x;
+        arrayPosY = y;
+        arrayPosZ = z;
+
+        ChangeDirection();
+    }
+
+
+
+    //---------------------------------
     //アリスが動いたときに呼ばれる関数
+    //---------------------------------
     public override void OnAliceMove(int aliceMoveTime)
     {
-        bool flag;
-        //修正箇所１
-        flag = CaptureDecision();
-        if(flag == false)
+        //アリスを発見したかどうかのフラグ
+        bool discoveryFlag;
+
+        //向きを保存
+        beforeDirection[timeCount] = direction;
+
+        //アリスが前にいるか判定
+        discoveryFlag = CaptureDecision();
+
+        //アリスが見つかっていなければ
+        if (discoveryFlag == false)
         {
             returnFlag = false;
 
-            if (modePatrol == true)
+            //(moveScript)プレイヤーの歩数と(timeCount)歩数を比べる
+            if (timeCount < aliceMoveTime)
             {
-
-                //(moveScript)プレイヤーの歩数と(timeCount)トランプの歩数を比べる
-                if (timeCount < aliceMoveTime)
+                int roopMax = 4;
+                for (int i = 0; i < roopMax; i++)
                 {
-                    moveing = true;
-                    //this.transform.Translate(Vector3.forward * MOVE_SPEED);
+                    discoveryFlag = false;
 
-                    //仮の保存座標に現在座標を入れる
-                    buttonInputPosition = this.transform.localPosition;
-
-                    //
-                    if ((startFlag == true) && (timeCount % one_Side == 0))
+                    //前に進めるか判定
+                    switch (direction)
                     {
-                        ////端っこにして回転していないとき
-                        //if (((rotFlag1 == false) && (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side) ||
-                        // (rotFlag2 == false) && (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side * 2) ||
-                        // (rotFlag3 == false) && (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side * 3) ||
-                        // (rotFlag4 == false) && (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side * 4)))
-                        if ((timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side) ||
-                           (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side * 2) ||
-                           (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side * 3) ||
-                           (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side * 4))
-                        {
-                            soldierDirection++;
-
-                            //向きが一周したら最初の向きに戻す
-                            if (soldierDirection == 5)
+                        case 1:
+                            if ((stageScript.DumBesideDecision(arrayPosX, arrayPosY, arrayPosZ + 1)) && (stageScript.DumBesideDownDecision(arrayPosX, arrayPosY, arrayPosZ + 1)))
                             {
-                                soldierDirection = 1;
+                                discoveryFlag = CaptureDecision();
+                                if (discoveryFlag == false)
+                                {
+                                    moveFlag = true;
+                                }
                             }
-
-
-                            //回転が終わって次に入力された時
-                            switch (backDirection)
+                            break;
+                        case 3:
+                            if ((stageScript.DumBesideDecision(arrayPosX, arrayPosY, arrayPosZ - 1)) && (stageScript.DumBesideDownDecision(arrayPosX, arrayPosY, arrayPosZ - 1)))
                             {
-                                case 1: rotFlag1 = true; break;
-                                case 2: rotFlag2 = true; break;
-                                case 3: rotFlag3 = true; break;
-                                case 4: rotFlag4 = true; break;
+                                discoveryFlag = CaptureDecision();
+                                if (discoveryFlag == false)
+                                {
+                                    moveFlag = true;
+                                }
                             }
-                        }
+                            break;
+                        case 4:
+                            if ((stageScript.DumBesideDecision(arrayPosX - 1, arrayPosY, arrayPosZ)) && (stageScript.DumBesideDownDecision(arrayPosX - 1, arrayPosY, arrayPosZ)))
+                            {
+                                discoveryFlag = CaptureDecision();
+                                if (discoveryFlag == false)
+                                {
+                                    moveFlag = true;
+                                }
+                            }
+                            break;
+                        case 2:
+                            if ((stageScript.DumBesideDecision(arrayPosX + 1, arrayPosY, arrayPosZ)) && (stageScript.DumBesideDownDecision(arrayPosX + 1, arrayPosY, arrayPosZ)))
+                            {
+                                discoveryFlag = CaptureDecision();
+                                if (discoveryFlag == false)
+                                {
+                                    moveFlag = true;
+                                }
+                            }
+                            break;
+                        default:
+                            break;
+                    }
 
+                    //もし動くフラグがtrueなら
+                    if (moveFlag == true)
+                    {
+                        break;
                     }
                     else
                     {
-                        startFlag = true;
-                    }
-                    //一個前を回転を保存する
-                    backDirection = soldierDirection;
-                    //カウントを進める
-                    timeCount += 1;
 
-                    //トランプ兵が規定ルートを一周したら
-                    if ((rotFlag1 == true) &&
-                    (rotFlag2 == true) &&
-                    (rotFlag3 == true) &&
-                    (rotFlag4 == true))
-                    {
-                        //周回した数を足し移動したフラグを消す
-                        rotRoopCount += 1;
-                        rotFlag1 = false;
-                        rotFlag2 = false;
-                        rotFlag3 = false;
-                        rotFlag4 = false;
+                        //左回転させる
+                        direction++;
 
-                    }
+                        //向きが一周したら最初の向きに戻す
+                        if (direction == 5)
+                        {
+                            direction = 1;
+                        }
 
-                    //向きが一周したら最初の向きに戻す
-                    if (soldierDirection == 5)
-                    {
-                        soldierDirection = 1;
-                    }
+                        //もし動けなかったら
+                        if (i == 4)
+                        {
+                            notMoveTrun[timeCount] = 1;
+                        }
+                        //向きの変更
+                        ChangeDirection();
 
-                    //変数に応じて回転を代入する
-                    if (soldierDirection == 1)
-                    {
-                        this.transform.localEulerAngles = enemyAngle1;
-                    }
-                    if (soldierDirection == 2)
-                    {
-                        this.transform.localEulerAngles = enemyAngle2;
-                    }
-                    if (soldierDirection == 3)
-                    {
-                        this.transform.localEulerAngles = enemyAngle3;
-                    }
-                    if (soldierDirection == 4)
-                    {
-                        this.transform.localEulerAngles = enemyAngle4;
+                        //アリスが前にいるか判定
+                        discoveryFlag = CaptureDecision();
+
+                        //アリスが回転しただけなら
+                        if (discoveryFlag && (i == 0 || i == 1 || i == 2))
+                        {
+                            TrunTime[timeCount] = 1;
+
+                            i = 4;
+                        }
                     }
                 }
+
+                //現在座標を保存
+                buttonInputPosition = this.transform.localPosition;
+
+                //向きの変更
+                ChangeDirection();
+
+                timeCount++;
             }
-            else if (modePatrol == false)
-            {
-
-
-                if (timeCount < aliceMoveTime)
-                {
-                    moveing = true;
-                    //this.transform.Translate(Vector3.forward * MOVE_SPEED);
-
-                    //カウントを進める
-                    timeCount += 1;
-                    //仮の保存座標に現在座標に入れる
-                    buttonInputPosition = this.transform.localPosition;
-
-                }
-
-
-
-            }      
         }
-        else
-        {
-            EndFlag = true;
-        }
-       
-
     }
 
-    //アリスが戻った時に呼ばれる関数
+    //----------------------------------
+    //アリスが時を戻した時に呼ばれる関数
+    //----------------------------------
     public override void OnAliceReturn(int aliceMoveTime)
     {
 
-        if (EndFlag == true)
+        returnFlag = true;
+
+        if (timeCount >= aliceMoveTime)
         {
-            EndFlag = false;
+            if (notMoveTrun[timeCount - 1] == 0)
+            {
+                moveFlag = true;
+            }
+
+            //カウントを戻す
+            timeCount -= 1;
         }
-        else
+
+
+        if (TrunTime[timeCount] == 1)
         {
-            returnFlag = true;
-
-            //トランプ兵が動くフラグ
-
-            if (modePatrol == true)
-            {
-                moveing = true;
-
-                //仮の保存座標に現在座標に入れる
-                buttonInputPosition = this.transform.localPosition;
-
-                if (timeCount >= aliceMoveTime)
-                {
-                    moveing = true;
-                    timeCount -= 1;
-
-                    if ((rotRoopCount >= 1) &&
-                       (rotFlag1 == false) &&
-                       (rotFlag2 == false) &&
-                       (rotFlag3 == false) &&
-                       (rotFlag4 == false) &&
-                       (timeCount - (one_Side * 4 * rotRoopCount) == 1))
-                    {
-                        rotRoopCount -= 1;
-                        rotFlag1 = true;
-                        rotFlag2 = true;
-                        rotFlag3 = true;
-                        rotFlag4 = true;
-
-
-                    }
-
-
-                    backDirection = soldierDirection;
-
-                }
-
-            }
-            else if (modePatrol == false)
-            {
-
-                if (timeCount >= aliceMoveTime)
-                {
-                    moveing = true;
-                    buttonInputPosition = this.transform.localPosition;
-
-                    if (modeRun == 1 || modeRun == 3)
-                    {
-                        if ((startFlag == true) && (timeCount % one_Side == 0))
-                        {
-                            soldierDirection -= 2;
-
-                        }
-                        else
-                        {
-                            startFlag = true;
-                        }
-
-                        if (soldierDirection <= 0)
-                        {
-                            soldierDirection = 3;
-                        }
-
-                        if (soldierDirection == 1)
-                        {
-                            this.transform.localEulerAngles = enemyAngle1;
-                        }
-
-                        if (soldierDirection == 3)
-                        {
-                            this.transform.localEulerAngles = enemyAngle3;
-                        }
-                    }
-                    else if (modeRun == 2 || modeRun == 4)
-                    {
-                        if ((startFlag == true) && (timeCount % one_Side == 0))
-                        {
-                            soldierDirection -= 2;
-                        }
-                        else
-                        {
-                            startFlag = true;
-                        }
-
-                        if (soldierDirection <= 0)
-                        {
-                            soldierDirection = 4;
-                        }
-
-                        if (soldierDirection == 2)
-                        {
-                            this.transform.localEulerAngles = enemyAngle2;
-                        }
-
-                        if (soldierDirection == 4)
-                        {
-                            this.transform.localEulerAngles = enemyAngle4;
-                        }
-                    }
-
-                    timeCount -= 1;
-                }
-            }
-
-            if (timeCount == 0)
-            {
-                startFlag = false;
-            }
+            moveFlag = false;
+            //向きを保存
+            direction = beforeDirection[timeCount];
+            //向きの変更
+            ChangeDirection();
         }
+
+        //待機フラグを初期化
+        notMoveTrun[timeCount] = 0;
+
+        TrunTime[timeCount] = 0;
+
+        //仮の保存座標に現在座標に入れる
+        buttonInputPosition = this.transform.localPosition;
     }
 
-	// Update is called once per frame
-	void Update () {
-        if(pauseScript.pauseFlag == false)
-        {
-            Move();
-  
-        }
-
-        
-	}
-
-    //実際に動かす時
+    //---------------
+    //移動させる関数
+    //---------------
     public void Move()
     {
- 
-		//----------------------
-		switch (moveing)
-		{
-            case true:
-
-                switch (returnFlag)
+        switch (returnFlag)
+        {
+            //ターン数が進むとき
+            case false:
+                if (moveFlag)
                 {
-                    case false://進むとき
-                        transform.Translate(Vector3.forward * SPEED);
-                        //以下停止コード
-                        switch (soldierDirection)
-                        {
-                            //Z軸を調整する
-                            case 1:
-                                //目的地に着いたとき
-                                if (transform.localPosition.z >= buttonInputPosition.z + 1)
-                                {
-                                    Vector3 position = new Vector3(transform.localPosition.x, transform.localPosition.y, buttonInputPosition.z + 1);
-                                    
-                                    if(modePatrol == true)
-                                    {
+                    //動くスピードを設定
+                    transform.Translate(Vector3.forward * SPEED);
 
-                                    }
-                                    else
-                                    {
-                                        if ((startFlag == true) && (timeCount % one_Side == 0))
-                                        {
-                                            soldierDirection += 2;
-                                           
-                                        }
-                                        else
-                                        {
-                                            startFlag = true;
-                                        }
-                                        if (soldierDirection >= 5)
-                                        {
-                                            soldierDirection = 1;
-                                        }
+                    //以下停止コード
+                    switch (direction)
+                    {
+                        //Z軸を調整する
+                        case 1:
+                            //目的地に着いたとき
+                            if (transform.localPosition.z >= buttonInputPosition.z + 1)
+                            {
+                                //誤差の調節
+                                Vector3 position = new Vector3(transform.localPosition.x, transform.localPosition.y, buttonInputPosition.z + 1);
+                                //移動を終える
+                                MoveFinish(position, ArrayMove.PLUS_Z);
+                            }
+                            break;
+                        case 3:
+                            //目的地に着いたとき
+                            if (transform.localPosition.z <= buttonInputPosition.z - 1)
+                            {
+                                //誤差の調節
+                                Vector3 position = new Vector3(transform.localPosition.x, transform.localPosition.y, buttonInputPosition.z - 1);
+                                //移動を終える
+                                MoveFinish(position, ArrayMove.MINUS_Z);
+                            }
+                            break;
 
-                                        if (soldierDirection == 1)
-                                        {
-                                            this.transform.localEulerAngles = enemyAngle1;
-                                        }
-
-                                        if (soldierDirection == 3)
-                                        {
-                                            this.transform.localEulerAngles = enemyAngle3;
-                                        }
-                                    }
-                                    
-
-                                    MoveFinish(position, ArrayMove.PLUS_Z);
-                                }
-                                break;
-                            case 3:
-                                //目的地に着いたとき
-                                if (transform.localPosition.z <= buttonInputPosition.z - 1)
-                                {
-                                    Vector3 position = new Vector3(transform.localPosition.x, transform.localPosition.y, buttonInputPosition.z - 1);
-                                   
-
-                                    if (modePatrol == true)
-                                    {
-
-                                    }
-                                    else
-                                    {
-                                        if ((startFlag == true) && (timeCount % one_Side == 0))
-                                        {
-                                            soldierDirection += 2;
-                                           
-                                        }
-                                        else
-                                        {
-                                            startFlag = true;
-                                        }
-                                        if (soldierDirection >= 5)
-                                        {
-                                            soldierDirection = 1;
-                                        }
-
-                                        if (soldierDirection == 1)
-                                        {
-                                            this.transform.localEulerAngles = enemyAngle1;
-                                        }
-
-                                        if (soldierDirection == 3)
-                                        {
-                                            this.transform.localEulerAngles = enemyAngle3;
-                                        }
-                                       
-
-                                    }
-                                    //移動終了時に呼ばれる
-                                    MoveFinish(position, ArrayMove.MINUS_Z);
-                                }
-                                break;
-
-                            //X軸を調整する
-                            case 4:
-                                //目的地に着いたとき
-                                if (transform.localPosition.x <= buttonInputPosition.x - 1)
-                                {
-                                    Vector3 position = new Vector3(buttonInputPosition.x - 1, transform.localPosition.y, transform.localPosition.z);
-
-                                    if (modePatrol == true)
-                                    {
-
-                                    }
-                                    else
-                                    {
-                                        if ((startFlag == true) && (timeCount % one_Side == 0))
-                                        {
-                                            soldierDirection += 2; 
-                                        }
-                                        else
-                                        {
-                                            startFlag = true;
-                                        }
-
-                                        if (soldierDirection >= 5)
-                                        {
-                                            soldierDirection = 2;
-                                        }
-
-                                        if (soldierDirection == 2)
-                                        {
-                                            this.transform.localEulerAngles = enemyAngle2;
-                                        }
-
-                                        if (soldierDirection == 4)
-                                        {
-                                            this.transform.localEulerAngles = enemyAngle4;
-                                        }
-                                    }
-                                    MoveFinish(position, ArrayMove.MINUS_X);
-                                }
-                                break;
-                            case 2:
-                                //目的地に着いたとき
-                                if (transform.localPosition.x >= buttonInputPosition.x + 1)
-                                {
-                                    Vector3 position = new Vector3(buttonInputPosition.x + 1, transform.localPosition.y, transform.localPosition.z);
-                                    
-
-
-                                    if (modePatrol == true)
-                                    {
-
-                                    }
-                                    else
-                                    {
-                                        if ((startFlag == true) && (timeCount % one_Side == 0))
-                                        {
-                                            
-                                            soldierDirection += 2;
-                                        }
-                                        else
-                                        {
-                                            startFlag = true;
-                                        }
-
-                                        if (soldierDirection >= 5)
-                                        {
-                                            soldierDirection = 2;
-                                        }
-
-                                        if (soldierDirection == 2)
-                                        {
-                                            this.transform.localEulerAngles = enemyAngle2;
-                                        }
-
-                                        if (soldierDirection == 4)
-                                        {
-                                            this.transform.localEulerAngles = enemyAngle4;
-                                        }
-
-                                        
-                                    }
-                                    //移動終了
-                                    MoveFinish(position, ArrayMove.PLUS_X);
-                                }
-                                break;
-                        }
-                        break;
-
-                    case true://戻るとき
-
-                        //実際の移動部分
-                        transform.Translate(Vector3.back * SPEED);
-                        //以下停止コード
-                        switch (soldierDirection)
-                        {
-                            case 1:
-
-
-                                if (transform.localPosition.z <= buttonInputPosition.z - 1)
-                                {
-                                    Vector3 position = new Vector3(transform.localPosition.x, transform.localPosition.y, buttonInputPosition.z - 1);
-                                    MoveFinish(position, ArrayMove.MINUS_Z);
-                                   
-                                    if(modePatrol == true)
-                                    {
-                                        if ((startFlag == true) && (timeCount % one_Side == 0))
-                                        {
-                                            ////端っこにいて回転した後だった場合
-                                            //if (((rotFlag1 == true)&&(timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side) ||
-                                            //  (rotFlag2 == true) &&  (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side *2) ||
-                                            //  (rotFlag3 == true) && (timeCount -  (one_Side * SQUARE * rotRoopCount) == one_Side *3) ||
-                                            //  (rotFlag4 == true) && (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side *4)))
-                                            if ((timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side) ||
-                                               (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side * 2) ||
-                                               (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side * 3) ||
-                                               (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side * 4)) //
-                                            {
-                                                soldierDirection--;
-
-                                                //回転変数が一周したら
-                                                if (soldierDirection == 0)
-                                                {
-                                                    soldierDirection = 4;
-                                                }
-                                                //現在の回転を指示する変数をみて対象の回転フラグを立てる
-                                                switch (soldierDirection)
-                                                {
-                                                    case 1: rotFlag1 = false; break;
-                                                    case 2: rotFlag2 = false; break;
-                                                    case 3: rotFlag3 = false; break;
-                                                    case 4: rotFlag4 = false; break;
-                                                }
-                                            }
-
-                                        }
-                                        //変数に応じて回転を代入する
-                                        if (soldierDirection == 1)
-                                        {
-                                            this.transform.localEulerAngles = enemyAngle1;
-                                        }
-                                        if (soldierDirection == 2)
-                                        {
-                                            this.transform.localEulerAngles = enemyAngle2;
-                                        }
-                                        if (soldierDirection == 3)
-                                        {
-                                            this.transform.localEulerAngles = enemyAngle3;
-                                        }
-                                        if (soldierDirection == 4)
-                                        {
-                                            this.transform.localEulerAngles = enemyAngle4;
-                                        }
-                                    }
-                                    else
-                                    {
-                                       
-
-                                    }
-                                    //moveDirection = MoveDirection.FRONT;
-                                }
-
-                               
-                                break;
-                            case 3:
-                                if (transform.localPosition.z >= buttonInputPosition.z + 1)
-                                {
-                                    
-
-                                    Vector3 position = new Vector3(transform.localPosition.x, transform.localPosition.y, buttonInputPosition.z + 1);
-                                    MoveFinish(position, ArrayMove.PLUS_Z);
-                                    if (modePatrol == true)
-                                    {
-                                        if ((startFlag == true) && (timeCount % one_Side == 0))
-                                        {
-                                            ////端っこにいて回転した後だった場合
-                                            //if (((rotFlag1 == true)&&(timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side) ||
-                                            //  (rotFlag2 == true) &&  (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side *2) ||
-                                            //  (rotFlag3 == true) && (timeCount -  (one_Side * SQUARE * rotRoopCount) == one_Side *3) ||
-                                            //  (rotFlag4 == true) && (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side *4)))
-                                            if ((timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side) ||
-                                               (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side * 2) ||
-                                               (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side * 3) ||
-                                               (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side * 4)) //
-                                            {
-                                                soldierDirection--;
-
-                                                //回転変数が一周したら
-                                                if (soldierDirection == 0)
-                                                {
-                                                    soldierDirection = 4;
-                                                }
-                                                //現在の回転を指示する変数をみて対象の回転フラグを立てる
-                                                switch (soldierDirection)
-                                                {
-                                                    case 1: rotFlag1 = false; break;
-                                                    case 2: rotFlag2 = false; break;
-                                                    case 3: rotFlag3 = false; break;
-                                                    case 4: rotFlag4 = false; break;
-                                                }
-                                            }
-
-                                        }
-                                        //変数に応じて回転を代入する
-                                        if (soldierDirection == 1)
-                                        {
-                                            this.transform.localEulerAngles = enemyAngle1;
-                                        }
-                                        if (soldierDirection == 2)
-                                        {
-                                            this.transform.localEulerAngles = enemyAngle2;
-                                        }
-                                        if (soldierDirection == 3)
-                                        {
-                                            this.transform.localEulerAngles = enemyAngle3;
-                                        }
-                                        if (soldierDirection == 4)
-                                        {
-                                            this.transform.localEulerAngles = enemyAngle4;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        
-
-                                    }
-                                    //moveDirection = MoveDirection.BACK;
-
-                                }
-                                
-                                break;
-                            case 4:
-                               
-                                if (transform.localPosition.x >= buttonInputPosition.x + 1)
-                                {
-                                 
-
-                                    Vector3 position = new Vector3(buttonInputPosition.x + 1, transform.localPosition.y, transform.localPosition.z);
-                                    MoveFinish(position, ArrayMove.PLUS_X);
-                                    //moveDirection = MoveDirection.LEFT;
-                                    if (modePatrol == true)
-                                    {
-                                        if ((startFlag == true) && (timeCount % one_Side == 0))
-                                        {
-                                            ////端っこにいて回転した後だった場合
-                                            //if (((rotFlag1 == true)&&(timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side) ||
-                                            //  (rotFlag2 == true) &&  (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side *2) ||
-                                            //  (rotFlag3 == true) && (timeCount -  (one_Side * SQUARE * rotRoopCount) == one_Side *3) ||
-                                            //  (rotFlag4 == true) && (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side *4)))
-                                            if ((timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side) ||
-                                               (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side * 2) ||
-                                               (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side * 3) ||
-                                               (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side * 4)) //
-                                            {
-                                                soldierDirection--;
-
-                                                //回転変数が一周したら
-                                                if (soldierDirection == 0)
-                                                {
-                                                    soldierDirection = 4;
-                                                }
-                                                //現在の回転を指示する変数をみて対象の回転フラグを立てる
-                                                switch (soldierDirection)
-                                                {
-                                                    case 1: rotFlag1 = false; break;
-                                                    case 2: rotFlag2 = false; break;
-                                                    case 3: rotFlag3 = false; break;
-                                                    case 4: rotFlag4 = false; break;
-                                                }
-                                            }
-
-                                        }
-                                        //変数に応じて回転を代入する
-                                        if (soldierDirection == 1)
-                                        {
-                                            this.transform.localEulerAngles = enemyAngle1;
-                                        }
-                                        if (soldierDirection == 2)
-                                        {
-                                            this.transform.localEulerAngles = enemyAngle2;
-                                        }
-                                        if (soldierDirection == 3)
-                                        {
-                                            this.transform.localEulerAngles = enemyAngle3;
-                                        }
-                                        if (soldierDirection == 4)
-                                        {
-                                            this.transform.localEulerAngles = enemyAngle4;
-                                        }
-                                      
-                                    }
-                                    else
-                                    {
-                                       
-                                    }
-                                   
-                                }
-
-                                break;
-                            case 2:
-                                if (transform.localPosition.x <= buttonInputPosition.x - 1)
-                                {
-                                    Debug.Log("Return right");
-
-                                    Vector3 position = new Vector3(buttonInputPosition.x - 1, transform.localPosition.y, transform.localPosition.z);
-                                    MoveFinish(position, ArrayMove.MINUS_X);
-                                    if (modePatrol == true)
-                                    {
-                                        if ((startFlag == true) && (timeCount % one_Side == 0))
-                                        {
-                                            ////端っこにいて回転した後だった場合
-                                            //if (((rotFlag1 == true)&&(timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side) ||
-                                            //  (rotFlag2 == true) &&  (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side *2) ||
-                                            //  (rotFlag3 == true) && (timeCount -  (one_Side * SQUARE * rotRoopCount) == one_Side *3) ||
-                                            //  (rotFlag4 == true) && (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side *4)))
-                                            if ((timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side) ||
-                                               (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side * 2) ||
-                                               (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side * 3) ||
-                                               (timeCount - (one_Side * SQUARE * rotRoopCount) == one_Side * 4)) //
-                                            {
-                                                soldierDirection--;
-
-                                                //回転変数が一周したら
-                                                if (soldierDirection == 0)
-                                                {
-                                                    soldierDirection = 4;
-                                                }
-                                                //現在の回転を指示する変数をみて対象の回転フラグを立てる
-                                                switch (soldierDirection)
-                                                {
-                                                    case 1: rotFlag1 = false; break;
-                                                    case 2: rotFlag2 = false; break;
-                                                    case 3: rotFlag3 = false; break;
-                                                    case 4: rotFlag4 = false; break;
-                                                }
-                                            }
-
-                                        }
-                                        //変数に応じて回転を代入する
-                                        if (soldierDirection == 1)
-                                        {
-                                            this.transform.localEulerAngles = enemyAngle1;
-                                        }
-                                        if (soldierDirection == 2)
-                                        {
-                                            this.transform.localEulerAngles = enemyAngle2;
-                                        }
-                                        if (soldierDirection == 3)
-                                        {
-                                            this.transform.localEulerAngles = enemyAngle3;
-                                        }
-                                        if (soldierDirection == 4)
-                                        {
-                                            this.transform.localEulerAngles = enemyAngle4;
-                                        }
-                                    }
-                                    else
-                                    {
-                                      
-                                    }
-                                    
-                                   // moveDirection = MoveDirection.RIGHT;
-                                }
-
-                                break;
-                            case 0:
-                                break;
-                        }
-                        
-                        
-                        break;
-
+                        //X軸を調整する
+                        case 4:
+                            //目的地に着いたとき
+                            if (transform.localPosition.x <= buttonInputPosition.x - 1)
+                            {
+                                //誤差の調節
+                                Vector3 position = new Vector3(buttonInputPosition.x - 1, transform.localPosition.y, transform.localPosition.z);
+                                //移動を終える
+                                MoveFinish(position, ArrayMove.MINUS_X);
+                            }
+                            break;
+                        case 2:
+                            //目的地に着いたとき
+                            if (transform.localPosition.x >= buttonInputPosition.x + 1)
+                            {
+                                //誤差の調節
+                                Vector3 position = new Vector3(buttonInputPosition.x + 1, transform.localPosition.y, transform.localPosition.z);
+                                //移動を終える
+                                MoveFinish(position, ArrayMove.PLUS_X);
+                            }
+                            break;
+                    }
+                }
+                else
+                {
+                    moveFlag = false;
                 }
                 break;
-            //移動が許可されてないとき
-            case false:
-                break;
-		}
-		//--------------------
-	}
-  
 
-    // 移動完了
+            //ターン数が戻るとき
+            case true:
+
+                if (moveFlag)
+                {
+                    //動くスピードを設定
+                    transform.Translate(Vector3.back * SPEED);
+
+                    //以下停止コード
+                    switch (direction)
+                    {
+                        //Z軸を調整する
+                        case 1:
+                            if (transform.localPosition.z <= buttonInputPosition.z - 1)
+                            {
+                                //誤差の調節
+                                Vector3 position = new Vector3(transform.localPosition.x, transform.localPosition.y, buttonInputPosition.z - 1);
+                                //移動を終える
+                                MoveFinish(position, ArrayMove.MINUS_Z);
+
+                            }
+                            break;
+                        case 3:
+                            //目的地に着いたとき
+                            if (transform.localPosition.z >= buttonInputPosition.z + 1)
+                            {
+                                //誤差の調節
+                                Vector3 position = new Vector3(transform.localPosition.x, transform.localPosition.y, buttonInputPosition.z + 1);
+                                //移動を終える
+                                MoveFinish(position, ArrayMove.PLUS_Z);
+
+                            }
+                            break;
+
+                        //X軸を調整する
+                        case 4:
+                            //目的地に着いたとき
+                            if (transform.localPosition.x >= buttonInputPosition.x + 1)
+                            {
+                                //誤差の調節
+                                Vector3 position = new Vector3(buttonInputPosition.x + 1, transform.localPosition.y, transform.localPosition.z);
+                                //移動を終える
+                                MoveFinish(position, ArrayMove.PLUS_X);
+                            }
+                            break;
+                        case 2:
+                            //目的地に着いたとき
+                            if (transform.localPosition.x <= buttonInputPosition.x - 1)
+                            {
+                                //誤差の調節
+                                Vector3 position = new Vector3(buttonInputPosition.x - 1, transform.localPosition.y, transform.localPosition.z);
+                                //移動を終える
+                                MoveFinish(position, ArrayMove.MINUS_X);
+
+                            }
+                            break;
+                    }
+                }
+                else
+                {
+                    moveFlag = false;
+                }
+
+                break;
+        }
+
+    }
+
+
+    //-------------------
+    //移動完了時呼ぶ関数
+    //-------------------
     public void MoveFinish(Vector3 position, ArrayMove arrayMove)
     {
         transform.localPosition = position;     // 座標を変更
         ChangeArrayPosition(arrayMove);         // 配列上の位置を変更
-        moveing = false;
-        //修正箇所２
+        stageScript.DumGimmickDecision(arrayPosX, arrayPosY, arrayPosZ);
+
+        //ターン数が戻った時の処理なら
+        if (returnFlag == true)
+        {
+            //前回の向きの取得
+            direction = beforeDirection[timeCount];
+
+            //向きの変更
+            ChangeDirection();
+
+
+        }
+        //リターンフラグの初期化
+        returnFlag = false;
+        //動きを止める
+        moveFlag = false;
+
         CaptureDecision();
-        //moveAction = MoveAction.NONE;           // アリスの行動を無しに
-        //moveFinishFlag = true;                  // 移動完了フラグを真に
     }
 
-    // 配列上の位置を変更する
+    //---------------------------
+    //配列上の位置を変更する関数
+    //---------------------------
     public void ChangeArrayPosition(ArrayMove arrayMove)
     {
         switch (arrayMove)
@@ -949,30 +473,18 @@ public class SpadeSoldier : BaseGimmick {
         }
     }
 
-    public void SetPat(){
-        modePatrol = true;
-    }
-
-
-    //
+    //---------------------------
+    //アリスが前にいるか判定処理
+    //---------------------------
     public bool CaptureDecision()
     {
         Vector3 playerArray = moveScript.GetArray();
-        Debug.Log(playerArray);
-        Debug.Log(arrayPosX);
-        Debug.Log(arrayPosY);
-        Debug.Log(arrayPosZ);
-        if ((playerArray.x == arrayPosX) && (playerArray.y == arrayPosY) && (playerArray.z == arrayPosZ))
-        {
-            Debug.Log("1ｄ");
-        }
-        Debug.Log(soldierDirection);
-        switch (soldierDirection)
+
+        switch (direction)
         {
             case 1:
                 if ((playerArray.x == arrayPosX) && (playerArray.y == arrayPosY) && (playerArray.z == arrayPosZ + 1))
                 {
-                    Debug.Log("a");
                     moveScript.gameOverFlag = true;
                     return true;
                 }
@@ -980,8 +492,6 @@ public class SpadeSoldier : BaseGimmick {
             case 2:
                 if ((playerArray.x == arrayPosX + 1) && (playerArray.y == arrayPosY) && (playerArray.z == arrayPosZ))
                 {
-
-                    Debug.Log("b");
                     moveScript.gameOverFlag = true;
                     return true;
                 }
@@ -990,8 +500,6 @@ public class SpadeSoldier : BaseGimmick {
             case 3:
                 if ((playerArray.x == arrayPosX) && (playerArray.y == arrayPosY) && (playerArray.z == arrayPosZ - 1))
                 {
-
-                    Debug.Log("c");
                     moveScript.gameOverFlag = true;
                     return true;
                 }
@@ -1000,13 +508,35 @@ public class SpadeSoldier : BaseGimmick {
             case 4:
                 if ((playerArray.x == arrayPosX - 1) && (playerArray.y == arrayPosY) && (playerArray.z == arrayPosZ))
                 {
-
-                    Debug.Log("d");
                     moveScript.gameOverFlag = true;
                     return true;
                 }
                 break;
         }
         return false;
+    }
+
+    //---------------------
+    //向きの変更をする関数
+    //---------------------
+    public void ChangeDirection()
+    {
+        //変数に応じて回転を代入する
+        if (direction == 1)
+        {
+            this.transform.localEulerAngles = enemyAngle1;
+        }
+        if (direction == 2)
+        {
+            this.transform.localEulerAngles = enemyAngle2;
+        }
+        if (direction == 3)
+        {
+            this.transform.localEulerAngles = enemyAngle3;
+        }
+        if (direction == 4)
+        {
+            this.transform.localEulerAngles = enemyAngle4;
+        }
     }
 }
