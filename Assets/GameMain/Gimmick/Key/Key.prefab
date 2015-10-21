@@ -29,7 +29,7 @@ GameObject:
   - 114: {fileID: 11471446}
   m_Layer: 0
   m_Name: Key
-  m_TagString: Untagged
+  m_TagString: Gimmick
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -179,6 +179,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startActionTurn: 0
+  gimmickActionCount: 0
+  gimmickDrawFlag: 0
+  moveCount: 0
 --- !u!198 &19820296
 ParticleSystem:
   m_ObjectHideFlags: 1

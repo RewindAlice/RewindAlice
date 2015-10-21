@@ -4276,8 +4276,14 @@ public class Stage : MonoBehaviour
             case DOOR_BLUE_KEY:
             case DOOR_YELLOW_KEY:
             case DOOR_GREEN_KEY:
-                getKeyFlag = true;
-                break;
+				// ギミックフラグが真なら
+				if (stageObject[posY, posX, posZ].GetComponent<Key>().GetGimmickFlag() == true)
+				{
+					alice.TouchKey();																										// 鍵の接触処理
+					stageObject[posY, posX, posZ].GetComponent<Key>().gimmickDrawFlag = false;    // 描画フラグを偽に
+					stageObject[posY, posX, posZ].GetComponent<Key>().SetGimmickFlag(false);      // ギミックフラグを偽に
+				}
+				break;
             // 茨
             case BRAMBLE:
                 stageObject[posY, posX, posZ].GetComponent<Bramble>().trapFlag = true;
@@ -4347,11 +4353,6 @@ public class Stage : MonoBehaviour
 
         if (invisibleFlag)
             alice.GetComponent<Player>().TouchCheshire();
-
-        if (getKeyFlag)
-            alice.GetComponent<Player>().TouchKey();
-
-        //
     }
 
     // 足元の判定

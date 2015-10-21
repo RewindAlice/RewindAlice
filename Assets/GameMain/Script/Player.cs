@@ -1625,4 +1625,12 @@ public class Player : MonoBehaviour
     {
         return invisibleFlag;
     }
+
+	//-------------------
+	//アリスが鍵を持っているか返す
+	//-------------------
+	public bool GetHavingKey()
+	{
+		return getKeyFlag;
+	}
 }
