@@ -47,6 +47,11 @@ public class CameraSystem : MonoBehaviour
 
     public float cameraRX;
 
+    //（クリア）回転開始時に一回だけ通す
+    private bool onceDirection;
+    //（クリア）回転終了判定
+    private bool cycleEnd;
+
     // 左回転時の方向設定
     void RotationLeft()
     {
@@ -97,6 +102,7 @@ public class CameraSystem : MonoBehaviour
         clearFlag = false;
         clearY = 0;
         clearTY = 0;
+        onceDirection = false;
 
         camera = GameObject.Find("Main Camera");
 
@@ -170,8 +176,8 @@ public class CameraSystem : MonoBehaviour
             // カメラをプレイヤーに追従させる
             transform.position = new Vector3(alice.transform.position.x + offset.x, alice.transform.position.y + offset.y, alice.transform.position.z + offset.z);
 
-            clearY = (int)transform.eulerAngles.y;
-            clearTY = clearY;
+           
+           
             transform.eulerAngles = new Vector3(0, currentRotationY, 0);    // カメラの角度に現在の角度を設定
         }
 
@@ -184,121 +190,144 @@ public class CameraSystem : MonoBehaviour
         //クリアしたら
         if (clearFlag == true)
         {
-
+            if (onceDirection == false)
+            {
+                clearY = (int)transform.eulerAngles.y;
+                clearTY = clearY;
+                onceDirection = true;
+            }
             //アリスの向きを取得
-            //int direction = alice.GetDirection();
+            int direction = alice.GetDirection();
             
-            //アリスの向きによって回転させる
-            //switch(direction)
-            //{
-            //    case 1:
-            //        if (clearY < 136 || clearY > 314)
-            //        {
-            //            if (clearTY != 135)
-            //            {
-            //                clearTY += 2;
-            //            }
+           //アリスの向きによって回転させる
+            switch (direction)
+            {
+                case 1:
+                    if (clearY < 136 || clearY > 314)
+                    {
+                        if (clearTY != 135)
+                        {
+                            clearTY += 2;
+                        }
 
-            //            if (clearTY == 360)
-            //            {
-            //                clearTY = 1;
-            //            }
-            //        }
-            //        else
-            //        {
-            //            if (clearTY != 135)
-            //            {
-            //                clearTY -= 2;
-            //            }
+                        if (clearTY == 360)
+                        {
+                            clearTY = 1;
+                        }
+                    }
+                    else
+                    {
+                        if (clearTY != 135)
+                        {
+                            clearTY -= 2;
+                        }
 
-            //            if (clearTY == 0)
-            //            {
-            //                clearTY = 359;
-            //            }
-            //        }
+                        if (clearTY == 0)
+                        {
+                            clearTY = 359;
+                        }
+                    }
+                    if(clearTY == 135)
+                    {
+                        cycleEnd = true;
+                    }
 
 
-            //        break;
-            //    case 2:
+                    break;
 
-            //        if (clearY < 45 || clearY > 224)
-            //        {
-            //            if (clearTY != 225)
-            //            {
-            //                clearTY -= 2;
-            //            }
+                case 2:
 
-            //            if (clearTY == 0)
-            //            {
-            //                clearTY = 359;
-            //            }
-            //        }
-            //        else
-            //        {
-            //            if (clearTY != 225)
-            //            {
-            //                clearTY += 2;
-            //            }
+                    if (clearY < 45 || clearY > 224)
+                    {
+                        if (clearTY != 225)
+                        {
+                            clearTY -= 2;
+                        }
 
-            //            if (clearTY == 360)
-            //            {
-            //                clearTY = 1;
-            //            }
-            //        }
-            //        break;
-            //    case 3:
-            //        if (clearY < 136 || clearY > 314)
-            //        {
-            //            if (clearTY != 315)
-            //            {
-            //                clearTY -= 2;
-            //            }
+                        if (clearTY == 0)
+                        {
+                            clearTY = 359;
+                        }
+                    }
+                    else
+                    {
+                        if (clearTY != 225)
+                        {
+                            clearTY += 2;
+                        }
 
-            //            if (clearTY == 0)
-            //            {
-            //                clearTY = 359;
-            //            }
-            //        }
-            //        else
-            //        {
-            //            if (clearTY != 315)
-            //            {
-            //                clearTY += 2;
-            //            }
+                        if (clearTY == 360)
+                        {
+                            clearTY = 1;
+                        }
+                    }
+                    if (clearTY == 225)
+                    {
+                        cycleEnd = true;
+                    }
+                    break;
 
-            //            if (clearTY == 360)
-            //            {
-            //                clearTY = 1;
-            //            }
-            //        }
-            //        break;
-            //    case 4:
-            //        if (clearY < 45 || clearY > 224)
-            //        {
-            //            if (clearTY != 45)
-            //            {
-            //                clearTY += 2;
-            //            }
+                case 3:
+                    if (clearY < 136 || clearY > 314)
+                    {
+                        if (clearTY != 315)
+                        {
+                            clearTY -= 2;
+                        }
 
-            //            if (clearTY == 360)
-            //            {
-            //                clearTY = 1;
-            //            }
-            //        }
-            //        else
-            //        {
-            //            if (clearTY != 45)
-            //            {
-            //                clearTY -= 2;
-            //            }
+                        if (clearTY == 0)
+                        {
+                            clearTY = 359;
+                        }
+                    }
+                    else
+                    {
+                        if (clearTY != 315)
+                        {
+                            clearTY += 2;
+                        }
 
-            //            if (clearTY == 0)
-            //            {
-            //                clearTY = 359;
-            //            }
-            //        }
-            //        break;
-            //}
+                        if (clearTY == 360)
+                        {
+                            clearTY = 1;
+                        }
+                    }
+                    if (clearTY == 315)
+                    {
+                        cycleEnd = true;
+                    }
+                    break;
+                case 4:
+                    if (clearY < 45 || clearY > 224)
+                    {
+                        if (clearTY != 45)
+                        {
+                            clearTY += 2;
+                        }
+
+                        if (clearTY == 360)
+                        {
+                            clearTY = 1;
+                        }
+                    }
+                    else
+                    {
+                        if (clearTY != 45)
+                        {
+                            clearTY -= 2;
+                        }
+
+                        if (clearTY == 0)
+                        {
+                            clearTY = 359;
+                        }
+                    }
+                    if (clearTY == 45)
+                    {
+                        cycleEnd = true;
+                    }
+                    break;
+            }
           
             //カメラを近づける
             if(time < 60)
@@ -358,4 +387,15 @@ public class CameraSystem : MonoBehaviour
             turn = Turn.RIGHT;                                  // 回転方向に右回転を設定
         }
     }
+    //リザルト用のカメラ移動が終わった時を送る
+    public bool EndCameraMove()
+    {
+        if(cycleEnd)
+        {
+            return true;
+        }
+        return false;
+    }
+
+ 
 }

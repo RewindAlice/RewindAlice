@@ -1633,4 +1633,21 @@ public class Player : MonoBehaviour
 	{
 		return getKeyFlag;
 	}
+
+    //-----------------
+    //アリスの向きを送る
+    //-----------------
+    public int GetDirection()
+    {
+        int sentDirection = 0;
+        switch (playerAngle)
+        {
+            case PlayerAngle.FRONT: sentDirection = 1; break;
+            case PlayerAngle.LEFT:  sentDirection = 4; break;
+            case PlayerAngle.RIGHT: sentDirection = 2; break;
+            case PlayerAngle.BACK:  sentDirection = 3; break;
+        }
+        return sentDirection;
+    }
+    
 }

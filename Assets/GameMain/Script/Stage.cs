@@ -213,6 +213,10 @@ public class Stage : MonoBehaviour
     public bool backFlag = false;   // ターンを戻すフラグ
     //
 
+    //ゴールしたことを伝える
+    public GameObject cameraSyatem;
+    public CameraSystem resultCamera;
+
     Field field;                                                                // フィールド
     public int[, ,] stage = new int[STAGE_Y, STAGE_X, STAGE_Z];                 // ステージの配置情報を保存
     GameObject fieldObject;                                                     // ステージ天球のオブジェクト
@@ -221,19 +225,25 @@ public class Stage : MonoBehaviour
     public bool goalFlag = false;
     public bool presenceKeyFlag = false;
     public bool presenceCheshireFlag = false;
-
+    
+    
 
     // 初期化
     void Start()
     {
         player = GameObject.Find("Alice");
         Player = player.GetComponent<Player>();
+        cameraSyatem = GameObject.Find("Camera");
+        resultCamera = cameraSyatem.GetComponent<CameraSystem>();
     }
 
     // 更新
     void Update()
     {
-
+        if((resultCamera.EndCameraMove())&&(Input.GetKeyDown(KeyCode.Space)))
+        {
+            CameraFade.StartAlphaFade(Color.black, false, 1.0f, 0.5f, () => { Application.LoadLevel("StageSelectScene"); });
+        }
     }
 
     // ステージ生成/////////////
@@ -4137,8 +4147,8 @@ public class Stage : MonoBehaviour
                     case 23: PlayerPrefs.SetInt("STAMP_NUM", 32); break;
                     case 24: PlayerPrefs.SetInt("STAMP_NUM", 33); break;
                 }
-
-                CameraFade.StartAlphaFade(Color.black, false, 1.0f, 0.5f, () => { Application.LoadLevel("StageSelectScene"); });
+                resultCamera.clearFlag = true;
+               
                 break;
             // 木
             case TREE1:
